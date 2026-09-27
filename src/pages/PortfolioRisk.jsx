@@ -90,7 +90,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
       <section className="risk-overview" aria-labelledby="risk-title">
         <div className="risk-overview-head">
           <div>
-            <h2 id="risk-title">Live Trade</h2>
+            <h2 id="risk-title">Portfolio Risk</h2>
           </div>
           <span className={'risk-badge' + (stopBreachCount || missingStopCount ? ' warning' : '')}><i /> {badge}</span>
         </div>
