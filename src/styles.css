@@ -737,6 +737,8 @@ code {
 }
 .risk-badge i,
 .position-dot {
+  display: inline-block;
+  flex: 0 0 auto;
   width: 0.65rem;
   height: 0.65rem;
   border-radius: 50%;
@@ -770,6 +772,7 @@ code {
   font-variant-numeric: tabular-nums;
 }
 .risk-summary-card.positive p { color: var(--risk-green); }
+.risk-summary-card.negative p { color: #ff484f; }
 .risk-summary-card.risk { border-color: rgba(255, 68, 76, 0.48); }
 .risk-summary-card.risk p { color: #ff484f; }
 .risk-summary-card.allocation p { color: var(--risk-purple); }
@@ -832,6 +835,11 @@ code {
   font-variant-numeric: tabular-nums;
 }
 .risk-pill.positive { color: var(--risk-green); }
+.risk-pill.negative,
+.risk-pill.breached { color: #ff555d; background: rgba(255, 72, 79, 0.14); }
+.risk-pill.risk-value { color: #ffb547; background: rgba(255, 171, 28, 0.13); }
+.risk-badge.warning { color: #ff656c; background: rgba(255, 72, 79, 0.13); }
+.risk-badge.warning i { background: #ff555d; }
 .allocation-cell {
   display: flex;
   align-items: center;
