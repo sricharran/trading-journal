@@ -9,8 +9,8 @@ export default function Reports({ rows }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [setup, setSetup] = useState('all');
-  const setups = useMemo(() => [...new Set(closed.map((row) => row.setup).filter(Boolean))].sort(), [closed]);
   const closed = useMemo(() => rows.filter((r) => !isOpenPosition(r)), [rows]);
+  const setups = useMemo(() => [...new Set(closed.map((row) => row.setup).filter(Boolean))].sort(), [closed]);
   const filtered = useMemo(() => closed.filter((r) => {
     const date = (r.type === 'L' ? r.buyDate : r.sellDate) || '';
     return (!from || date >= from) && (!to || date <= to) && (setup === 'all' || r.setup === setup);
