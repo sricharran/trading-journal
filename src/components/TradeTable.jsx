@@ -15,7 +15,7 @@ import {
 /**
  * Journal table. `rows` are derived trades, already in display order.
  */
-export default function TradeTable({ rows, onEdit, onDelete, onSelect }) {
+export default function TradeTable({ rows, onSelect }) {
   return (
     <div className="table-wrap">
       <table className="ledger">
@@ -41,9 +41,6 @@ export default function TradeTable({ rows, onEdit, onDelete, onSelect }) {
             <th>Target</th>
             <th className="num">Cap. adj.</th>
             <th className="num">Capital</th>
-            <th>
-              <span className="visually-hidden">Actions</span>
-            </th>
           </tr>
         </thead>
         <tbody>
@@ -94,14 +91,6 @@ export default function TradeTable({ rows, onEdit, onDelete, onSelect }) {
                 </td>
                 <td className="num muted">{r.capAdjustment ? fmtSignedMoney(r.capAdjustment) : ''}</td>
                 <td className="num">{fmtMoney(r.closingCapital)}</td>
-                <td className="actions">
-                  <button type="button" className="btn link" onClick={(event) => { event.stopPropagation(); onEdit(r); }}>
-                    Edit
-                  </button>
-                  <button type="button" className="btn link danger" onClick={(event) => { event.stopPropagation(); onDelete(r); }}>
-                    Delete
-                  </button>
-                </td>
               </tr>
             );
           })}
