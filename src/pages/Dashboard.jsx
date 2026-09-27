@@ -26,6 +26,18 @@ export default function Dashboard({ startingCapital }) {
       const date = row.type === 'L' ? row.buyDate : row.sellDate;
       if (date) dailyMap.set(date, (dailyMap.get(date) || 0) + (row.netPL || 0));
     });
+    const grossProfit = closed.filter((r)=>r.netPL>0).reduce((sum,r)=>sum+(r.netPL||0),0);
+    const grossLoss = Math.abs(closed.filter((r)=>r.netPL<0).reduce((sum,r)=>sum+(r.netPL||0),0));
+    const avgWin = modelAverage(closed.filter((r)=>r.netPL>0).map((r)=>r.netPL));
+    const avgLoss = Math.abs(modelAverage(closed.filter((r)=>r.netPL<0).map((r)=>r.netPL)) || 0);
+    const tradeLogAxes = [
+      { label: 'Win rate', value: closed.length ? wins.length/closed.length*100 : 0 },
+      { label: 'Avg win/loss', value: avgLoss ? Math.min(avgWin/avgLoss/3*100,100) : 50 },
+      { label: 'Profit factor', value: grossLoss ? Math.min(grossProfit/grossLoss/3*100,100) : grossProfit ? 100 : 0 },
+      { label: 'Discipline', value: scored.length ? goodTrades.length/scored.length*100 : 50 },
+      { label: 'Consistency', value: dailyMap.size ? [...dailyMap.values()].filter((value)=>value>0).length/dailyMap.size*100 : 50 },
+    ];
+    const tradeLogScore = closed.length ? Math.round(tradeLogAxes.reduce((sum,axis)=>sum+axis.value,0)/tradeLogAxes.length) : null;
     let equity = Number(startingCapital || 0);
     const curve = [...closed].sort((a,b) => {
       const da = (a.type === 'L' ? a.buyDate : a.sellDate) || '';
@@ -51,7 +63,7 @@ export default function Dashboard({ startingCapital }) {
       best, worst, bestWinStreak, worstLossStreak, currentStreak,
       qualityCount: scored.length, averageQuality: scored.length ? scored.reduce((sum,row)=>sum+Number(row.qualityScore),0)/scored.length : null,
       goodCount: goodTrades.length, badCount: badTrades.length, adherence: scored.length ? goodTrades.length/scored.length : null,
-      emotionGroups: [...emotions.values()].sort((a,b)=>b.pnl-a.pnl),
+      emotionGroups: [...emotions.values()].sort((a,b)=>b.pnl-a.pnl), tradeLogAxes, tradeLogScore,
       recent: [...closed].sort((a,b) => ((b.type === 'L' ? b.buyDate : b.sellDate) || '').localeCompare((a.type === 'L' ? a.buyDate : a.sellDate) || '')).slice(0,6),
     };
   }, [rows, closed, startingCapital]);
@@ -75,6 +87,7 @@ export default function Dashboard({ startingCapital }) {
 
     <div className="dashboard-main-grid">
       <div className="dashboard-side-stack">
+        <section className="panel dashboard-insight-panel"><div className="dashboard-panel-head"><div><h3>Trading score</h3><p>Win rate · reward/risk · discipline · consistency</p></div><strong className="trading-score-value">{model.tradeLogScore ?? '—'}</strong></div><div className="score-bars">{model.tradeLogAxes.map((axis)=><div key={axis.label}><span>{axis.label}</span><i><b style={{width:axis.value+'%'}} /></i></div>)}</div></section>
         <section className="panel dashboard-insight-panel">
           <div className="dashboard-panel-head"><div><h3>Win / loss split</h3><p>Closed trade outcomes</p></div></div>
           {model.outcomes.length ? <div className="outcome-chart"><ResponsiveContainer width="100%" height={180}><PieChart><Pie data={model.outcomes} dataKey="value" nameKey="name" innerRadius={48} outerRadius={72} paddingAngle={2}>{model.outcomes.map((item)=><Cell key={item.name} fill={item.fill} />)}</Pie><Tooltip /></PieChart></ResponsiveContainer><div className="outcome-legend"><span><i className="legend-win" />{model.wins} wins</span><span><i className="legend-loss" />{model.losses} losses</span></div></div> : <p className="empty">Closed trades will appear here.</p>}
@@ -110,4 +123,5 @@ export default function Dashboard({ startingCapital }) {
     <section className="panel dashboard-monthly-panel"><div className="dashboard-panel-head"><div><h3>Monthly performance</h3><p>Wins, losses, and cumulative net P/L</p></div></div><MonthlyTable months={months}/></section>
   </div>;
 }
+function modelAverage(values) { return values.length ? values.reduce((sum,value)=>sum+value,0)/values.length : 0; }
 function BestWorst({label,row}) { return <div className="best-worst-row"><span><small>{label}</small><strong>{row?.symbol || '—'}</strong></span><b className={row ? plClass(row.netPL) : 'muted'}>{row ? fmtSignedMoney(row.netPL) : '—'}</b></div>; }
