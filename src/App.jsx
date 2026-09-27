@@ -98,7 +98,7 @@ export default function App() {
         {settingsLoading ? (
           <p className="empty">Loading accountâ€¦</p>
         ) : page === 'journal' ? (
-          <Journal />
+          <Journal startingCapital={startingCapital} />
         ) : page === 'risk' ? (
           <PortfolioRisk rows={rows} capital={stats.latestCapital ?? startingCapital} loading={tradesLoading} />
         ) : (
