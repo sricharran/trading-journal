@@ -22,6 +22,8 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
   const [search, setSearch] = useState('');
   const [resultFilter, setResultFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('newest');
+  const [setupFilter, setSetupFilter] = useState('all');
+  const setups = useMemo(() => [...new Set(rows.map((row) => row.setup).filter(Boolean))].sort(), [rows]);
 
   useEffect(() => {
     if (addTradeRequest > 0) {
@@ -40,6 +42,7 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
       if (filter === 'closed' && open) return false;
       if (resultFilter === 'win' && (open || pnl <= 0)) return false;
       if (resultFilter === 'loss' && (open || pnl >= 0)) return false;
+      if (setupFilter !== 'all' && row.setup !== setupFilter) return false;
       if (query && !String(row.symbol || '').toLowerCase().includes(query)) return false;
       return true;
     });
@@ -50,7 +53,7 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
       if (sortOrder === 'lowest') return (a.netPL || 0) - (b.netPL || 0);
       return dateOf(b).localeCompare(dateOf(a));
     });
-  }, [rows, filter, resultFilter, search, sortOrder]);
+  }, [rows, filter, resultFilter, setupFilter, search, sortOrder]);
 
   async function handleSave(form) {
     if (editing === 'new') await addTrade(form);
@@ -106,6 +109,9 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
         <input type="search" aria-label="Search by symbol" placeholder="Search symbol…" value={search} onChange={(event) => setSearch(event.target.value)} />
         <select aria-label="Filter results" value={resultFilter} onChange={(event) => setResultFilter(event.target.value)}>
           <option value="all">All results</option><option value="win">Wins</option><option value="loss">Losses</option>
+        </select>
+        <select aria-label="Filter setup" value={setupFilter} onChange={(event) => setSetupFilter(event.target.value)}>
+          <option value="all">All setups</option>{setups.map((setup) => <option key={setup} value={setup}>{setup}</option>)}
         </select>
         <select aria-label="Sort trades" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}>
           <option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="highest">Highest P/L</option><option value="lowest">Lowest P/L</option>
@@ -195,6 +201,9 @@ function TradeDetailsDialog({ trade, onClose, onEdit, onDelete }) {
     ['Capital', fmtMoney(trade.closingCapital)],
     ['Capital adjustment', trade.capAdjustment ? fmtSignedMoney(trade.capAdjustment) : '—'],
     ['Target', trade.targetReport ?? '—'],
+    ['Setup', trade.setup || '—'],
+    ['Emotion', trade.emotion || '—'],
+    ['Process quality', trade.qualityScore == null ? '—' : `${trade.qualityScore}/4`],
   ];
 
   async function removeTrade() {
