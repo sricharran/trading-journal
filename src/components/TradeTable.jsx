@@ -24,6 +24,9 @@ export default function TradeTable({ rows, onSelect }) {
             <th className="sticky">Symbol</th>
             <th>Opened</th>
             <th>Side</th>
+            <th>Setup</th>
+            <th>Emotion</th>
+            <th>Quality</th>
             <th className="num">Qty</th>
             <th className="num">Buy</th>
             <th className="num">Sell</th>
@@ -70,6 +73,9 @@ export default function TradeTable({ rows, onSelect }) {
                   {r.type === 'L' ? 'Long' : 'Short'}
                   <span className="sub">{r.contract === 'I' ? 'Intraday' : 'Delivery'}</span>
                 </td>
+                <td><span className="sub">{r.setup || '—'}</span></td>
+                <td><span className="sub">{r.emotion || '—'}</span></td>
+                <td><QualityBadge score={r.qualityScore} /></td>
                 <td className="num">{fmtWhole(qty)}</td>
                 <td className="num">{fmtPrice(r.buyPrice)}</td>
                 <td className="num">{fmtPrice(r.sellPrice)}</td>
@@ -124,6 +130,11 @@ function Status({ row, open }) {
   }
   if (s === 'Closed') return <span className="status closed">Closed</span>;
   return <span className="muted">—</span>;
+}
+
+function QualityBadge({ score }) {
+  if (score === null || score === undefined || score === '') return <span className="muted">—</span>;
+  return <span className={'quality-badge ' + (score >= 3 ? 'good' : 'poor')}>{score}/4</span>;
 }
 
 function Target({ value }) {
