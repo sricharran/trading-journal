@@ -15,7 +15,7 @@ import {
 /**
  * Journal table. `rows` are derived trades, already in display order.
  */
-export default function TradeTable({ rows, onEdit, onDelete }) {
+export default function TradeTable({ rows, onEdit, onDelete, onSelect }) {
   return (
     <div className="table-wrap">
       <table className="ledger">
@@ -51,7 +51,19 @@ export default function TradeTable({ rows, onEdit, onDelete }) {
             const open = isOpenPosition(r);
             const qty = (r.lots ?? 0) * (r.lotSize ?? 0);
             return (
-              <tr key={r.id} className={open ? 'is-open' : 'is-closed'}>
+              <tr
+                key={r.id}
+                className={(open ? 'is-open' : 'is-closed') + ' is-clickable'}
+                tabIndex={0}
+                aria-label={`View ${r.symbol} trade details`}
+                onClick={() => onSelect(r)}
+                onKeyDown={(event) => {
+                  if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+                    event.preventDefault();
+                    onSelect(r);
+                  }
+                }}
+              >
                 <th scope="row" className="sticky symbol">
                   {r.symbol}
                   {r.notes && <span className="note-dot" title={r.notes} aria-label="Has notes" />}
@@ -83,10 +95,10 @@ export default function TradeTable({ rows, onEdit, onDelete }) {
                 <td className="num muted">{r.capAdjustment ? fmtSignedMoney(r.capAdjustment) : ''}</td>
                 <td className="num">{fmtMoney(r.closingCapital)}</td>
                 <td className="actions">
-                  <button type="button" className="btn link" onClick={() => onEdit(r)}>
+                  <button type="button" className="btn link" onClick={(event) => { event.stopPropagation(); onEdit(r); }}>
                     Edit
                   </button>
-                  <button type="button" className="btn link danger" onClick={() => onDelete(r)}>
+                  <button type="button" className="btn link danger" onClick={(event) => { event.stopPropagation(); onDelete(r); }}>
                     Delete
                   </button>
                 </td>
