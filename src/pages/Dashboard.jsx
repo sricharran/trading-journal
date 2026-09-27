@@ -23,8 +23,8 @@ export default function Dashboard({ startingCapital }) {
     });
     let equity = Number(startingCapital || 0);
     const curve = [...closed].sort((a,b) => {
-      const da = a.type === 'L' ? a.buyDate : a.sellDate;
-      const db = b.type === 'L' ? b.buyDate : b.sellDate;
+      const da = (a.type === 'L' ? a.buyDate : a.sellDate) || '';
+      const db = (b.type === 'L' ? b.buyDate : b.sellDate) || '';
       return da.localeCompare(db);
     }).map((row) => {
       equity += row.netPL || 0;
@@ -44,7 +44,7 @@ export default function Dashboard({ startingCapital }) {
       curve,
       outcomes: [{name:'Wins',value:wins.length,fill:'var(--gain)'},{name:'Losses',value:losses.length,fill:'var(--loss)'}].filter((x)=>x.value),
       best, worst, bestWinStreak, worstLossStreak, currentStreak,
-      recent: [...closed].sort((a,b) => (b.type === 'L' ? b.buyDate : b.sellDate).localeCompare(a.type === 'L' ? a.buyDate : a.sellDate)).slice(0,6),
+      recent: [...closed].sort((a,b) => ((b.type === 'L' ? b.buyDate : b.sellDate) || '').localeCompare((a.type === 'L' ? a.buyDate : a.sellDate) || '')).slice(0,6),
     };
   }, [rows, closed, startingCapital]);
   const primaryStats = [
