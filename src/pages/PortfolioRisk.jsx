@@ -90,8 +90,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
       <section className="risk-overview" aria-labelledby="risk-title">
         <div className="risk-overview-head">
           <div>
-            <p className="risk-eyebrow">Live exposure</p>
-            <h2 id="risk-title">Portfolio Risk</h2>
+            <h2 id="risk-title">Live Trade</h2>
           </div>
           <span className={'risk-badge' + (stopBreachCount || missingStopCount ? ' warning' : '')}><i /> {badge}</span>
         </div>
@@ -109,10 +108,9 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
       <section className="risk-tracker" aria-labelledby="positions-title">
         <header className="risk-tracker-head">
           <div>
-            <p className="risk-eyebrow">Live tracker</p>
             <h2 id="positions-title">Open Positions</h2>
           </div>
-          <span className="position-count">{loading ? 'Loading…' : positions.length + ' positions'}</span>
+          <span className="position-count">{loading ? 'Loading…' : positions.length + (positions.length === 1 ? ' position' : ' positions')}</span>
         </header>
 
         <div className="risk-table-wrap">
@@ -122,7 +120,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
                 <th scope="col">Stock</th>
                 <th scope="col" className="align-right">Running impact</th>
                 <th scope="col" className="risk-column">Open risk <small>to active SL/TSL</small></th>
-                <th scope="col">Alloc</th>
+                <th scope="col" className="align-right">Alloc</th>
               </tr>
             </thead>
             <tbody>
@@ -144,7 +142,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
                       {position.stopBreached ? 'SL/TSL crossed' : formatPercent(position.openRiskPct)}
                     </span>
                   </td>
-                  <td>
+                  <td className="align-right">
                     <div className="allocation-cell">
                       <span>{formatPercent(position.allocationPct)}</span>
                       <span className="allocation-track" aria-hidden="true"><i style={{ width: Math.min(position.allocationPct ?? 0, 100) + '%' }} /></span>
