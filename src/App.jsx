@@ -55,8 +55,16 @@ export default function App() {
     <div className="app">
       <header className="masthead">
         <div className="masthead-inner">
-          <div className="brand">
-            <h1>Trading journal</h1>
+          <div className="masthead-top">
+            <div className="brand">
+              <h1>Trading journal</h1>
+            </div>
+            <div className="account-menu">
+              <span>{user.email}</span>
+              <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
+                Sign out
+              </button>
+            </div>
           </div>
           <nav className="tabs" aria-label="Views">
             {Object.entries(PAGES).map(([key, label]) => (
@@ -65,13 +73,6 @@ export default function App() {
               </a>
             ))}
           </nav>
-
-          <div className="account-menu">
-            <span>{user.email}</span>
-            <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
-              Sign out
-            </button>
-          </div>
         </div>
       </header>
 
