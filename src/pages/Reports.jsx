@@ -8,11 +8,13 @@ const numberFmt = (value) => Number(value || 0).toLocaleString('en-IN', { maximu
 export default function Reports({ rows }) {
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [setup, setSetup] = useState('all');
+  const setups = useMemo(() => [...new Set(closed.map((row) => row.setup).filter(Boolean))].sort(), [closed]);
   const closed = useMemo(() => rows.filter((r) => !isOpenPosition(r)), [rows]);
   const filtered = useMemo(() => closed.filter((r) => {
     const date = (r.type === 'L' ? r.buyDate : r.sellDate) || '';
-    return (!from || date >= from) && (!to || date <= to);
-  }), [closed, from, to]);
+    return (!from || date >= from) && (!to || date <= to) && (setup === 'all' || r.setup === setup);
+  }), [closed, from, to, setup]);
   const stats = useMemo(() => {
     const winners = filtered.filter((r) => r.netPL > 0);
     const losers = filtered.filter((r) => r.netPL < 0);
@@ -48,7 +50,7 @@ export default function Reports({ rows }) {
     <section className="panel report-filters">
       <label className="field"><span>From</span><input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
       <label className="field"><span>To</span><input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>
-      <button className="btn ghost" type="button" onClick={() => { setFrom(''); setTo(''); }}>Clear dates</button>
+      <label className="field"><span>Setup</span><select value={setup} onChange={(e)=>setSetup(e.target.value)}><option value="all">All setups</option>{setups.map((name)=><option key={name}>{name}</option>)}</select></label><button className="btn ghost" type="button" onClick={() => { setFrom(''); setTo(''); setSetup('all'); }}>Clear filters</button>
     </section>
     <dl className="stats stats-primary report-stats">
       <ReportStat label="Net P/L" value={fmtSignedMoney(stats.net)} tone={plClass(stats.net)} detail={stats.count + ' closed trades'} />
