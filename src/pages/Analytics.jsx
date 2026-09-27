@@ -5,7 +5,7 @@ import { fmtMonth, fmtMoney, fmtSignedMoney, fmtPct, plClass } from '../lib/form
 
 export default function Analytics({ rows, startingCapital }) {
   const [calendarMonth, setCalendarMonth] = useState(() => { const now = new Date(); return new Date(now.getFullYear(), now.getMonth(), 1); });
-  const closed = useMemo(() => rows.filter((r) => !isOpenPosition(r)).sort((a, b) => (a.type === 'L' ? a.buyDate : a.sellDate).localeCompare(b.type === 'L' ? b.buyDate : b.sellDate)), [rows]);
+  const closed = useMemo(() => rows.filter((r) => !isOpenPosition(r)).sort((a, b) => ((a.type === 'L' ? a.buyDate : a.sellDate) || '').localeCompare((b.type === 'L' ? b.buyDate : b.sellDate) || '')), [rows]);
   const data = useMemo(() => {
     let equity = Number(startingCapital || 0), peak = equity, maxDrawdown = 0, maxDrawdownPct = 0;
     const curve = closed.map((r) => {
