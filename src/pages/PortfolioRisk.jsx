@@ -39,10 +39,10 @@ function derivePosition(row, capital) {
   if (hasQuantity && hasActiveStop && hasLtp) {
     if (row.type === 'L') {
       stopBreached = row.ltp <= activeStop;
-      openRiskAmount = Math.max(0, (row.ltp - activeStop) * quantity);
+      openRiskAmount = Math.max(0, (row.netBuyPrice - activeStop / (1 + rate)) * quantity);
     } else {
       stopBreached = row.ltp >= activeStop;
-      openRiskAmount = Math.max(0, (activeStop - row.ltp) * quantity);
+      openRiskAmount = Math.max(0, (activeStop * (1 + rate) - row.netSellPrice) * quantity);
     }
   }
 
@@ -158,7 +158,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
           </table>
         </div>
         <p className="risk-prototype-note">
-          Uses saved LTP and TSL when set; otherwise current risk uses the initial stop.
+          Open risk is the estimated loss from entry to the active stop (TSL when set, otherwise initial SL).
         </p>
       </section>
     </main>
