@@ -16,6 +16,11 @@ export default function Dashboard({ startingCapital }) {
     const openPL = open.reduce((sum, row) => sum + (row.netPL || 0), 0);
     const wins = closed.filter((row) => row.netPL > 0);
     const losses = closed.filter((row) => row.netPL < 0);
+    const scored = closed.filter((row) => row.qualityScore !== null && row.qualityScore !== undefined && row.qualityScore !== '');
+    const goodTrades = scored.filter((row) => Number(row.qualityScore) >= 3);
+    const badTrades = scored.filter((row) => Number(row.qualityScore) < 3);
+    const emotions = new Map();
+    scored.forEach((row) => { if (!row.emotion) return; const group = emotions.get(row.emotion) || { name: row.emotion, pnl: 0, count: 0 }; group.pnl += row.netPL || 0; group.count++; emotions.set(row.emotion, group); });
     const dailyMap = new Map();
     closed.forEach((row) => {
       const date = row.type === 'L' ? row.buyDate : row.sellDate;
@@ -44,6 +49,9 @@ export default function Dashboard({ startingCapital }) {
       curve,
       outcomes: [{name:'Wins',value:wins.length,fill:'var(--gain)'},{name:'Losses',value:losses.length,fill:'var(--loss)'}].filter((x)=>x.value),
       best, worst, bestWinStreak, worstLossStreak, currentStreak,
+      qualityCount: scored.length, averageQuality: scored.length ? scored.reduce((sum,row)=>sum+Number(row.qualityScore),0)/scored.length : null,
+      goodCount: goodTrades.length, badCount: badTrades.length, adherence: scored.length ? goodTrades.length/scored.length : null,
+      emotionGroups: [...emotions.values()].sort((a,b)=>b.pnl-a.pnl),
       recent: [...closed].sort((a,b) => ((b.type === 'L' ? b.buyDate : b.sellDate) || '').localeCompare((a.type === 'L' ? a.buyDate : a.sellDate) || '')).slice(0,6),
     };
   }, [rows, closed, startingCapital]);
@@ -87,13 +95,17 @@ export default function Dashboard({ startingCapital }) {
       </section>
     </div>
 
+    <div className="dashboard-insights-grid">
+      <section className="panel dashboard-insight-panel"><div className="dashboard-panel-head"><div><h3>Emotion vs P/L</h3><p>Realized results by recorded emotion</p></div></div>{model.emotionGroups.length ? model.emotionGroups.map((item)=><div className="emotion-insight-row" key={item.name}><span>{item.name}<small>{item.count} trades</small></span><strong className={plClass(item.pnl)}>{fmtSignedMoney(item.pnl)}</strong></div>) : <p className="empty">Record emotions while reviewing trades to see patterns.</p>}</section>
+      <section className="panel dashboard-insight-panel"><div className="dashboard-panel-head"><div><h3>Process review</h3><p>Process quality score of 3 or 4 counts as good</p></div></div><div className="quality-review-grid"><div><strong>{model.averageQuality == null ? '—' : model.averageQuality.toFixed(1) + '/4'}</strong><span>Average score</span></div><div><strong className="gain">{model.goodCount}</strong><span>Good trades</span></div><div><strong className="loss">{model.badCount}</strong><span>Needs review</span></div><div><strong>{fmtPct(model.adherence,0)}</strong><span>Adherence</span></div></div>{!model.qualityCount&&<p className="settings-description">Score closed trades from Journal to enable process insights.</p>}</section>
+    </div>
     <section className="panel dashboard-daily-panel">
       <div className="dashboard-panel-head"><div><h3>Daily realized P/L</h3><p>Closed trade results grouped by date</p></div></div>
       {model.daily.length ? <ResponsiveContainer width="100%" height={220}><BarChart data={model.daily}><CartesianGrid stroke="var(--rule)" vertical={false}/><XAxis dataKey="date" tick={{fill:'var(--muted)',fontSize:10}} axisLine={false} tickLine={false}/><YAxis tick={{fill:'var(--muted)',fontSize:10}} tickFormatter={(v)=>Number(v).toLocaleString('en-IN')} axisLine={false} tickLine={false} width={65}/><Tooltip formatter={(v)=>[fmtSignedMoney(v),'Net P/L']}/><Bar dataKey="pnl" radius={[4,4,0,0]}>{model.daily.map((d,i)=><Cell key={i} fill={d.pnl>=0?'var(--gain)':'var(--loss)'}/>)}</Bar></BarChart></ResponsiveContainer> : <p className="empty">Daily results will appear when trades are closed.</p>}
     </section>
     <section className="panel dashboard-recent-panel">
       <div className="dashboard-panel-head"><div><h3>Recent closed trades</h3><p>Latest six realized results</p></div><a href="#journal" className="btn link">View journal →</a></div>
-      <div className="table-wrap"><table className="ledger"><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th className="num">Qty</th><th className="num">Net P/L</th></tr></thead><tbody>{model.recent.map((row)=><tr key={row.id}><td>{fmtDate(row.type==='L'?row.buyDate:row.sellDate)}</td><th scope="row" className="symbol">{row.symbol}</th><td>{row.type==='L'?'Long':'Short'}</td><td className="num">{(row.lots||0)*(row.lotSize||0)}</td><td className={'num strong '+plClass(row.netPL)}>{fmtSignedMoney(row.netPL)}</td></tr>)}{!model.recent.length&&<tr><td colSpan="5" className="muted">No closed trades yet.</td></tr>}</tbody></table></div>
+      <div className="table-wrap"><table className="ledger"><thead><tr><th>Date</th><th>Symbol</th><th>Side</th><th>Setup</th><th>Quality</th><th className="num">Qty</th><th className="num">Net P/L</th></tr></thead><tbody>{model.recent.map((row)=><tr key={row.id}><td>{fmtDate(row.type==='L'?row.buyDate:row.sellDate)}</td><th scope="row" className="symbol">{row.symbol}</th><td>{row.type==='L'?'Long':'Short'}</td><td>{row.setup || '—'}</td><td>{row.qualityScore == null ? '—' : row.qualityScore + '/4'}</td><td className="num">{(row.lots||0)*(row.lotSize||0)}</td><td className={'num strong '+plClass(row.netPL)}>{fmtSignedMoney(row.netPL)}</td></tr>)}{!model.recent.length&&<tr><td colSpan="7" className="muted">No closed trades yet.</td></tr>}</tbody></table></div>
     </section>
     <section className="panel dashboard-monthly-panel"><div className="dashboard-panel-head"><div><h3>Monthly performance</h3><p>Wins, losses, and cumulative net P/L</p></div></div><MonthlyTable months={months}/></section>
   </div>;
