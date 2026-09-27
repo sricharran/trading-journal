@@ -818,7 +818,7 @@ code {
 .stock-chip {
   display: inline-block;
   padding: 0.42rem 0.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--rule);
   border-radius: 0.65rem;
   background: var(--surface);
   font-size: 1rem;
