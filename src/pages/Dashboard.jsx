@@ -17,8 +17,8 @@ import { useDerivedTrades } from '../store/useTradeStore.js';
 import { computeDashboardStats, computeMonthlyPerformance } from '../lib/calculations.js';
 import { fmtMonth, fmtPct, fmtRatio, fmtSignedMoney, fmtDays, fmtMoney, plClass } from '../lib/format.js';
 
-export default function Dashboard() {
-  const rows = useDerivedTrades();
+export default function Dashboard({ startingCapital }) {
+  const rows = useDerivedTrades(startingCapital);
   const stats = useMemo(() => computeDashboardStats(rows), [rows]);
   const months = useMemo(() => computeMonthlyPerformance(rows), [rows]);
 
@@ -88,3 +88,4 @@ export default function Dashboard() {
     </div>
   );
 }
+
