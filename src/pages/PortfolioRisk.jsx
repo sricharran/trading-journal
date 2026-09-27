@@ -61,9 +61,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
   const initialRiskPct = asCapitalPercent(sumField(positions, 'initialRiskAmount'), capital);
   const openPlPct = asCapitalPercent(sumField(positions, 'netPL'), capital);
   const openRiskPct = asCapitalPercent(sumField(positions, 'openRiskAmount'), capital);
-  const allocatedPct = asCapitalPercent(sumField(positions, 'allocationPct') === null
-    ? null
-    : positions.reduce((total, position) => total + (position.allocationPct ?? 0), 0), 100);
+  const allocatedPct = sumField(positions, 'allocationPct');
   const stopBreachCount = positions.filter((position) => position.stopBreached).length;
   const missingStopCount = positions.filter((position) => position.openRiskAmount === null).length;
 
