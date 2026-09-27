@@ -5,6 +5,7 @@ export function useAccountSettings(userId) {
   const [startingCapital, setStartingCapital] = useState(0);
   const [loading, setLoading] = useState(Boolean(userId));
   const [error, setError] = useState(null);
+  const [loadedUserId, setLoadedUserId] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -12,6 +13,7 @@ export function useAccountSettings(userId) {
       setStartingCapital(0);
       setLoading(false);
       setError(null);
+      setLoadedUserId(null);
       return () => { active = false; };
     }
 
@@ -30,8 +32,10 @@ export function useAccountSettings(userId) {
           .from('account_settings')
           .insert({ user_id: userId, starting_capital: 0 });
         if (insertError && active) setError(insertError.message);
+        else if (active) setLoadedUserId(userId);
       } else if (active) {
         setStartingCapital(Number(data.starting_capital));
+        setLoadedUserId(userId);
       }
       if (active) setLoading(false);
     }
@@ -49,5 +53,5 @@ export function useAccountSettings(userId) {
     setStartingCapital(amount);
   }
 
-  return { startingCapital, loading, error, saveStartingCapital };
+  return { startingCapital, loading: loading || (Boolean(userId) && loadedUserId !== userId && !error), error, saveStartingCapital };
 }

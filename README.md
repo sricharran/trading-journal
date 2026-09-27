@@ -39,6 +39,22 @@ Database access is protected by row-level security and requires an authenticated
 Supabase project settings private, disable public sign-ups, and never put a Supabase secret/service
 role key in this frontend.
 
+## Private free hosting with GitHub and Cloudflare Pages
+
+Keep the source repository private. Cloudflare Pages supports private GitHub repositories and
+deploys on each push. GitHub Pages on the free plan requires a public repository, so it is not the
+recommended option for this private project.
+
+1. Create a private GitHub repository and push the `main` branch.
+2. In Cloudflare, open **Workers & Pages → Create application → Pages → Connect to Git** and select
+   the repository. Limit the GitHub App installation to this repository.
+3. Set the build command to `npm run build`, the output directory to `dist`, and add
+   `VITE_SUPABASE_URL` plus `VITE_SUPABASE_ANON_KEY` as build environment variables.
+4. In Supabase Authentication settings, turn off public sign-ups and add the Cloudflare Pages URL
+   to the allowed site URLs. Create your sign-in user in the dashboard.
+5. Before first login, run `supabase/migrate-to-auth.sql` as described above (or `schema.sql` on a
+   fresh project). Then sign in and set the starting capital with **Edit base**.
+
 ## Project structure
 
 ```
