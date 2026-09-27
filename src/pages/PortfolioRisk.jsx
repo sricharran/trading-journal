@@ -92,7 +92,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
             <p className="risk-eyebrow">Live exposure</p>
             <h2 id="risk-title">Portfolio Risk</h2>
           </div>
-          <span className="risk-badge"><i /> {badge}</span>
+          <span className={'risk-badge' + (stopBreachCount || missingStopCount ? ' warning' : '')}><i /> {badge}</span>
         </div>
 
         <div className="risk-summary">
