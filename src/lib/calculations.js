@@ -189,7 +189,8 @@ export function deriveTrade(trade, closingCapital, { today = todayDayNumber() } 
   const targetReport =
     isNum(rocePct) && isNum(riskOnCapital) ? (rocePct >= -riskOnCapital ? 'J' : 'L') : null;
 
-  const allocationRatio = div(netBuyValue, closingCapital);
+  const allocationAmount = trade.type === 'L' ? netBuyValue : netSellValue;
+  const allocationRatio = div(allocationAmount, closingCapital);
   const allocationPct = allocationRatio === null ? null : allocationRatio * 100;
 
   return {
