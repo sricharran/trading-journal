@@ -57,14 +57,14 @@ export default function App() {
         <div className="masthead-inner">
           <div className="brand">
             <h1>Trading journal</h1>
-            <nav className="tabs" aria-label="Views">
-              {Object.entries(PAGES).map(([key, label]) => (
-                <a key={key} href={`#${key}`} className="tab" aria-current={page === key ? 'page' : undefined}>
-                  {label}
-                </a>
-              ))}
-            </nav>
           </div>
+          <nav className="tabs" aria-label="Views">
+            {Object.entries(PAGES).map(([key, label]) => (
+              <a key={key} href={`#${key}`} className="tab" aria-current={page === key ? 'page' : undefined}>
+                {label}
+              </a>
+            ))}
+          </nav>
 
           <div className="account-menu">
             <span>{user.email}</span>
@@ -81,7 +81,7 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {!settingsLoading && (
+        {page === 'risk' && !settingsLoading && (
           <section className="account-summary" aria-label="Account summary">
             <dl className="ledger-strip">
               <div>
@@ -91,10 +91,6 @@ export default function App() {
               <div>
                 <dt>Net P/L, closed</dt>
                 <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
-              </div>
-              <div>
-                <dt>Open</dt>
-                <dd>{stats.openTrades}</dd>
               </div>
             </dl>
           </section>
