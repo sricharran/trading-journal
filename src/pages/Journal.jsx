@@ -11,7 +11,7 @@ const FILTERS = [
   { key: 'closed', label: 'Closed' },
 ];
 
-export default function Journal({ startingCapital }) {
+export default function Journal({ startingCapital, addTradeRequest = 0 }) {
   const { loading, error, addTrade, updateTrade, deleteTrade, fetchTrades } = useTradeStore();
   const rows = useDerivedTrades(startingCapital);
 
@@ -19,6 +19,13 @@ export default function Journal({ startingCapital }) {
   const [editing, setEditing] = useState(null);
   const [filter, setFilter] = useState('all');
   const [selectedTrade, setSelectedTrade] = useState(null);
+
+  useEffect(() => {
+    if (addTradeRequest > 0) {
+      setSelectedTrade(null);
+      setEditing('new');
+    }
+  }, [addTradeRequest]);
 
   // Capital is computed oldest-first; the journal shows newest first.
   const visible = useMemo(() => {
