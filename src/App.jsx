@@ -22,6 +22,7 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const fetchTrades = useTradeStore((s) => s.fetchTrades);
   const clearTrades = useTradeStore((s) => s.clearTrades);
+  const tradesLoading = useTradeStore((s) => s.loading);
   const { startingCapital, loading: settingsLoading, error: settingsError, saveStartingCapital } = useAccountSettings(user?.id);
   const rows = useDerivedTrades(startingCapital);
   const stats = computeDashboardStats(rows);
@@ -99,7 +100,7 @@ export default function App() {
         ) : page === 'journal' ? (
           <Journal />
         ) : page === 'risk' ? (
-          <PortfolioRisk />
+          <PortfolioRisk rows={rows} capital={stats.latestCapital ?? startingCapital} loading={tradesLoading} />
         ) : (
           <Dashboard startingCapital={startingCapital} />
         )}
