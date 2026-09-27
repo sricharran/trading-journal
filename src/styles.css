@@ -870,6 +870,105 @@ code {
   font-size: 0.82rem;
 }
 
+.ledger tbody tr.is-clickable {
+  cursor: pointer;
+}
+.ledger tbody tr.is-clickable:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.trade-details-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(21, 35, 49, 0.48);
+}
+.trade-details-dialog {
+  width: min(46rem, 100%);
+  max-height: min(88vh, 54rem);
+  overflow: auto;
+  padding: clamp(1.1rem, 3vw, 1.75rem);
+  border: 1px solid var(--rule);
+  border-radius: 0.75rem;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 18px 55px rgba(21, 35, 49, 0.22);
+}
+.trade-details-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--rule);
+}
+.trade-details-head .eyebrow {
+  margin-bottom: 0.2rem;
+}
+.trade-details-head h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+.trade-details-subtitle {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.trade-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1.1rem 0;
+}
+.trade-details-grid > div {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: #f8fafb;
+}
+.trade-details-grid dt {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+.trade-details-grid dd {
+  margin: 0.15rem 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.trade-details-notes {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--rule);
+}
+.trade-details-notes h3 {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+}
+.trade-details-notes p {
+  margin: 0;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+.trade-details-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+}
+.btn.danger-action {
+  border-color: #e5c1c5;
+  background: #f9ecee;
+  color: var(--loss);
+}
+.btn.danger-action:hover {
+  background: #f4dfe2;
+}
+
 /* ------------------------------------------------------------------
    Small screens
    ------------------------------------------------------------------ */
@@ -897,6 +996,10 @@ code {
     width: 100%;
     justify-content: space-between;
   }
+  .trade-details-dialog { max-height: 92vh; }
+  .trade-details-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+  .trade-details-actions { flex-wrap: wrap; }
+  .trade-details-actions .btn { flex: 1; }
   .risk-overview-head { align-items: flex-start; }
   .risk-badge { padding: 0.5rem 0.75rem; font-size: 0.86rem; }
   .risk-summary { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin-top: 1.25rem; }
