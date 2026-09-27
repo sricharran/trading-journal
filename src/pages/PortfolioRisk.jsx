@@ -81,7 +81,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
   const summary = [
     { label: 'Initial risk', value: formatPercent(initialRiskPct), tone: 'negative' },
     { label: 'Open P&L', value: formatPercent(openPlPct, true), tone: openPlPct === null ? '' : openPlPct >= 0 ? 'positive' : 'negative' },
-    { label: 'Open risk @ SL', value: formatPercent(openRiskPct), tone: 'risk' },
+    { label: 'Open risk @ SL', value: formatPercent(openRiskPct), tone: openRiskPct === null ? 'risk' : openRiskPct > 0 ? 'positive' : 'risk' },
     { label: 'Allocated', value: formatPercent(allocatedPct), tone: 'allocation' },
   ];
 
