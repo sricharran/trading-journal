@@ -66,20 +66,7 @@ export default function App() {
             </nav>
           </div>
 
-          <dl className="ledger-strip">
-            <div>
-              <CapitalControl startingCapital={startingCapital} onSave={saveStartingCapital} />
-              <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
-            </div>
-            <div>
-              <dt>Net P/L, closed</dt>
-              <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
-            </div>
-            <div>
-              <dt>Open</dt>
-              <dd>{stats.openTrades}</dd>
-            </div>
-          </dl>
+     </dl>
           <div className="account-menu">
             <span>{user.email}</span>
             <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
@@ -94,6 +81,24 @@ export default function App() {
           <div className="form-error" role="alert">
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
+        )}
+        {!settingsLoading && (
+          <section className="account-summary" aria-label="Account summary">
+            <dl className="ledger-strip">
+              <div>
+                <CapitalControl startingCapital={startingCapital} onSave={saveStartingCapital} />
+                <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
+              </div>
+              <div>
+                <dt>Net P/L, closed</dt>
+                <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
+              </div>
+              <div>
+                <dt>Open</dt>
+                <dd>{stats.openTrades}</dd>
+              </div>
+            </dl>
+          </section>
         )}
         {settingsLoading ? (
           <p className="empty">Loading accountâ€¦</p>
