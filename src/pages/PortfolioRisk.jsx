@@ -20,7 +20,9 @@ function derivePosition(row, capital) {
   const quantity = Number(row.lots) * Number(row.lotSize);
   const hasQuantity = isNum(quantity) && quantity > 0;
   const hasLtp = isNum(row.ltp) && row.ltp > 0;
+  const activeStop = isNum(row.trailingStop) && row.trailingStop > 0 ? row.trailingStop : row.initialStop;
   const hasStop = isNum(row.initialStop) && row.initialStop > 0;
+  const hasActiveStop = isNum(activeStop) && activeStop > 0;
   const rate = isNum(row.rate) ? row.rate : 0;
 
   let initialRiskAmount = null;
@@ -34,13 +36,13 @@ function derivePosition(row, capital) {
     initialRiskAmount = Math.max(0, initialRisk);
   }
 
-  if (hasQuantity && hasStop && hasLtp) {
+  if (hasQuantity && hasActiveStop && hasLtp) {
     if (row.type === 'L') {
-      stopBreached = row.ltp <= row.initialStop;
-      openRiskAmount = Math.max(0, (row.ltp - row.initialStop) * quantity);
+      stopBreached = row.ltp <= activeStop;
+      openRiskAmount = Math.max(0, (row.ltp - activeStop) * quantity);
     } else {
-      stopBreached = row.ltp >= row.initialStop;
-      openRiskAmount = Math.max(0, (row.initialStop - row.ltp) * quantity);
+      stopBreached = row.ltp >= activeStop;
+      openRiskAmount = Math.max(0, (activeStop - row.ltp) * quantity);
     }
   }
 
@@ -48,6 +50,7 @@ function derivePosition(row, capital) {
   return {
     ...row,
     initialRiskAmount,
+    activeStop,
     openRiskAmount,
     stopBreached,
     impactPct: asCapitalPercent(row.netPL, capital),
@@ -118,7 +121,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
               <tr>
                 <th scope="col">Stock</th>
                 <th scope="col" className="align-right">Running impact</th>
-                <th scope="col" className="risk-column">Open risk <small>to stored initial stop</small></th>
+                <th scope="col" className="risk-column">Open risk <small>to active SL/TSL</small></th>
                 <th scope="col">Alloc</th>
               </tr>
             </thead>
@@ -138,7 +141,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
                   </td>
                   <td className="align-right">
                     <span className={'risk-pill ' + (position.stopBreached ? 'breached' : 'risk-value')}>
-                      {position.stopBreached ? 'SL crossed' : formatPercent(position.openRiskPct)}
+                      {position.stopBreached ? 'SL/TSL crossed' : formatPercent(position.openRiskPct)}
                     </span>
                   </td>
                   <td>
@@ -155,7 +158,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
           </table>
         </div>
         <p className="risk-prototype-note">
-          Uses each trade’s saved LTP and initial stop. Trailing stops are not stored separately yet.
+          Uses saved LTP and TSL when set; otherwise current risk uses the initial stop.
         </p>
       </section>
     </main>
