@@ -1674,3 +1674,28 @@ body { font-size: 14px; letter-spacing: -0.01em; -webkit-font-smoothing: antiali
   .ledger { font-size: 8pt; }
   .ledger th, .ledger td { padding: 4px; }
 }
+
+
+.heatmap-panel { margin-bottom: 0.8rem; padding: 1rem 1.1rem; border-color: rgba(0,0,0,0.06); border-radius: 0.6rem; }
+.heatmap-controls { display: flex; align-items: center; gap: 0.55rem; }
+.heatmap-controls strong { min-width: 8.5rem; text-align: center; font-size: 0.8rem; }
+.heatmap-controls button { padding: 0.35rem 0.55rem; border: 1px solid #e5e7eb; border-radius: 0.4rem; background: white; color: var(--muted); font: inherit; font-size: 0.72rem; cursor: pointer; }
+.heatmap-controls button:hover { border-color: var(--accent); color: var(--accent); }
+.heatmap-weekdays, .heatmap-grid { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: 0.3rem; }
+.heatmap-weekdays { margin: 0.8rem 0 0.35rem; }
+.heatmap-weekdays span { color: var(--muted); text-align: center; font-size: 0.65rem; font-weight: 600; }
+.heatmap-day { display: flex; flex-direction: column; justify-content: space-between; min-height: 3.4rem; padding: 0.4rem; border: 1px solid #e5e7eb; border-radius: 0.4rem; overflow: hidden; }
+.heatmap-day small { color: var(--muted); font-size: 0.65rem; }
+.heatmap-day b { align-self: flex-end; max-width: 100%; overflow: hidden; color: var(--gain); font-size: 0.6rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.heatmap-day.win { border-color: rgba(5,150,105,0.16); background: rgba(5,150,105,0.08); }
+.heatmap-day.loss { border-color: rgba(220,38,38,0.14); background: rgba(220,38,38,0.07); }
+.heatmap-day.loss b { color: var(--loss); }
+.heatmap-day.blank { border-color: transparent; background: transparent; }
+@media (max-width: 520px) {
+  .heatmap-panel { padding: 0.8rem; }
+  .heatmap-controls { gap: 0.25rem; }
+  .heatmap-controls strong { min-width: auto; font-size: 0.68rem; }
+  .heatmap-controls button { padding: 0.3rem; font-size: 0.65rem; }
+  .heatmap-day { min-height: 2.5rem; padding: 0.25rem; }
+  .heatmap-day b { font-size: 0.5rem; }
+}
