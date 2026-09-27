@@ -107,7 +107,7 @@ export default function Journal({ startingCapital }) {
           </div>
         )
       ) : visible.length ? (
-        <TradeTable rows={visible} onEdit={startEdit} onDelete={handleDelete} onSelect={setSelectedTrade} />
+        <TradeTable rows={visible} onSelect={setSelectedTrade} />
       ) : (
         <p className="empty">No {filter} trades.</p>
       )}
