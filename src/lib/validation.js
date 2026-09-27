@@ -21,6 +21,7 @@ export function validateTrade(form) {
   positive('lots', 'lots');
   positive('lotSize', 'lot size');
   positive('initialStop', 'initial stop');
+  if (!isEmpty(form.trailingStop)) positive('trailingStop', 'trailing stop');
   required('entryTime', 'entry time');
 
   if (!isEmpty(form.capAdjustment) && !isNumber(form.capAdjustment)) {
