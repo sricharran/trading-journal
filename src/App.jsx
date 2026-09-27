@@ -93,7 +93,7 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal /> : <Dashboard />}
+        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal /> : <Dashboard startingCapital={startingCapital} />}
       </main>
     </div>
   );
