@@ -16,10 +16,27 @@ function pageFromHash() {
   return PAGES[key] ? key : 'journal';
 }
 
+function getGreeting(now = new Date()) {
+  const hour = now.getHours();
+  if (hour < 12) return 'Good morning!';
+  if (hour < 17) return 'Good afternoon!';
+  return 'Good evening!';
+}
+
+function formatToday(now = new Date()) {
+  return now.toLocaleDateString('en-IN', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
 export default function App() {
   const [page, setPage] = useState(pageFromHash);
   const [user, setUser] = useState(null);
   const [authReady, setAuthReady] = useState(false);
+  const [addTradeRequest, setAddTradeRequest] = useState(0);
   const fetchTrades = useTradeStore((s) => s.fetchTrades);
   const clearTrades = useTradeStore((s) => s.clearTrades);
   const tradesLoading = useTradeStore((s) => s.loading);
@@ -47,65 +64,107 @@ export default function App() {
     return () => window.removeEventListener('hashchange', onHash);
   }, []);
 
+  function requestAddTrade() {
+    if (window.location.hash !== '#journal') window.location.hash = 'journal';
+    setPage('journal');
+    setAddTradeRequest((request) => request + 1);
+  }
+
   if (!isSupabaseConfigured) return <SetupNotice />;
-  if (!authReady) return <p className="auth-loading">Loading secure sessionâ€¦</p>;
+  if (!authReady) return <p className="auth-loading">Loading secure session...</p>;
   if (!user) return <Login />;
 
   return (
-    <div className="app">
-      <header className="masthead">
-        <div className="masthead-inner">
-          <div className="masthead-top">
-            <div className="brand">
-              <h1>Trading journal</h1>
-            </div>
-            <div className="account-menu">
-              <span>{user.email}</span>
-              <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
-                Sign out
-              </button>
-            </div>
-          </div>
-          <nav className="tabs" aria-label="Views">
-            {Object.entries(PAGES).map(([key, label]) => (
-              <a key={key} href={`#${key}`} className="tab" aria-current={page === key ? 'page' : undefined}>
-                {label}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </header>
+    <div className="app-shell">
+      <aside className="sidebar">
+        <a className="sidebar-brand" href="#dashboard" aria-label="Trading journal home">
+          <span className="sidebar-brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 17.5 9 12l3.5 3.5L20 7" />
+              <path d="M14.5 7H20v5.5" />
+            </svg>
+          </span>
+          <span className="sidebar-brand-copy">
+            <strong>Trading journal</strong>
+            <small>Personal journal · INR</small>
+          </span>
+        </a>
 
-      <main className="content">
-        {settingsError && (
-          <div className="form-error" role="alert">
-            Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
-          </div>
-        )}
-        {page === 'risk' && !settingsLoading && (
-          <section className="account-summary" aria-label="Account summary">
-            <dl className="ledger-strip">
-              <div>
-                <CapitalControl startingCapital={startingCapital} onSave={saveStartingCapital} />
-                <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
-              </div>
-              <div>
-                <dt>Net P/L, closed</dt>
-                <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
-              </div>
-            </dl>
+        <nav className="sidebar-nav" aria-label="Main navigation">
+          <section className="sidebar-nav-group">
+            <h2>Overview</h2>
+            <a href="#dashboard" className="sidebar-link" aria-current={page === 'dashboard' ? 'page' : undefined}>
+              <span className="sidebar-icon" aria-hidden="true">▦</span>
+              Dashboard
+            </a>
           </section>
-        )}
-        {settingsLoading ? (
-          <p className="empty">Loading accountâ€¦</p>
-        ) : page === 'journal' ? (
-          <Journal startingCapital={startingCapital} />
-        ) : page === 'risk' ? (
-          <PortfolioRisk rows={rows} capital={stats.latestCapital ?? startingCapital} loading={tradesLoading} />
-        ) : (
-          <Dashboard startingCapital={startingCapital} />
-        )}
-      </main>
+          <section className="sidebar-nav-group">
+            <h2>Trading</h2>
+            <a href="#risk" className="sidebar-link" aria-current={page === 'risk' ? 'page' : undefined}>
+              <span className="sidebar-icon" aria-hidden="true">◉</span>
+              Live Trade
+            </a>
+            <a href="#journal" className="sidebar-link" aria-current={page === 'journal' ? 'page' : undefined}>
+              <span className="sidebar-icon" aria-hidden="true">▤</span>
+              Journal
+            </a>
+          </section>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-account">
+            <span className="sidebar-account-dot" aria-hidden="true" />
+            <span className="sidebar-account-email" title={user.email}>{user.email}</span>
+            <button type="button" className="sidebar-sign-out" onClick={() => supabase.auth.signOut()}>
+              Sign out
+            </button>
+          </div>
+          <button type="button" className="sidebar-add-trade" onClick={requestAddTrade}>
+            <span aria-hidden="true">+</span> Add trade
+          </button>
+        </div>
+      </aside>
+
+      <div className="workspace">
+        <header className="workspace-header">
+          <div>
+            <h1>{getGreeting()}</h1>
+            <p>{formatToday()}</p>
+          </div>
+          <span className="workspace-status"><i aria-hidden="true" /> Account active</span>
+        </header>
+
+        <main className="content">
+          {settingsError && (
+            <div className="form-error" role="alert">
+              Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
+            </div>
+          )}
+          {page === 'risk' && !settingsLoading && (
+            <section className="account-summary" aria-label="Account summary">
+              <dl className="ledger-strip">
+                <div>
+                  <CapitalControl startingCapital={startingCapital} onSave={saveStartingCapital} />
+                  <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
+                </div>
+                <div>
+                  <dt>Net P/L, closed</dt>
+                  <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
+                </div>
+              </dl>
+            </section>
+          )}
+          {settingsLoading ? (
+            <p className="empty">Loading account...</p>
+          ) : page === 'journal' ? (
+            <Journal startingCapital={startingCapital} addTradeRequest={addTradeRequest} />
+          ) : page === 'risk' ? (
+            <PortfolioRisk rows={rows} capital={stats.latestCapital ?? startingCapital} loading={tradesLoading} />
+          ) : (
+            <Dashboard startingCapital={startingCapital} />
+          )}
+        </main>
+      </div>
     </div>
   );
 }
@@ -128,7 +187,16 @@ function CapitalControl({ startingCapital, onSave }) {
 
   return (
     <>
-      <dt>Capital <button type="button" className="capital-edit" onClick={() => { setValue(String(startingCapital)); setEditing(!editing); }}>Edit base</button></dt>
+      <dt>
+        Capital
+        <button
+          type="button"
+          className="capital-edit"
+          onClick={() => { setValue(String(startingCapital)); setEditing(!editing); }}
+        >
+          Edit base
+        </button>
+      </dt>
       {editing && (
         <form className="capital-editor" onSubmit={save}>
           <input aria-label="Starting capital" type="number" step="any" required value={value} onChange={(e) => setValue(e.target.value)} />
@@ -151,4 +219,3 @@ function SetupNotice() {
     </section>
   );
 }
-
