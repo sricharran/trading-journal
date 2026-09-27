@@ -28,7 +28,8 @@ export default function TradeTable({ rows, onEdit, onDelete }) {
             <th className="num">Buy</th>
             <th className="num">Sell</th>
             <th className="num">LTP</th>
-            <th className="num">Stop</th>
+            <th className="num">Initial SL</th>
+            <th className="num">TSL</th>
             <th className="num">Net P/L</th>
             <th className="num">ROI</th>
             <th className="num">ROCE</th>
@@ -65,6 +66,7 @@ export default function TradeTable({ rows, onEdit, onDelete }) {
                 <td className="num">{fmtPrice(r.sellPrice)}</td>
                 <td className="num">{open ? fmtPrice(r.ltp) : '—'}</td>
                 <td className="num">{fmtPrice(r.initialStop)}</td>
+                <td className="num">{fmtPrice(r.trailingStop)}</td>
                 <td className={`num strong ${plClass(r.netPL)}`}>{fmtSignedMoney(r.netPL)}</td>
                 <td className={`num ${plClass(r.roiPct)}`}>{fmtPct(r.roiPct)}</td>
                 <td className={`num ${plClass(r.rocePct)}`}>{fmtPct(r.rocePct)}</td>
