@@ -200,7 +200,6 @@ function TradeDetailsDialog({ trade, onClose, onEdit, onDelete }) {
         </div>
 
         <footer className="trade-details-actions">
-          <button type="button" className="btn ghost" onClick={onClose}>Close</button>
           <button type="button" className="btn danger-action" onClick={removeTrade}>Delete trade</button>
           <button type="button" className="btn primary" onClick={() => onEdit(trade)}>Edit trade</button>
         </footer>
