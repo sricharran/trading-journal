@@ -26,6 +26,9 @@ export function mapTradeFromDb(row) {
     entryTime: row.entry_time ? String(row.entry_time).slice(0, 5) : '',
     exitTime: row.exit_time ? String(row.exit_time).slice(0, 5) : '',
     notes: row.notes ?? '',
+    setup: row.setup ?? '',
+    emotion: row.emotion ?? '',
+    qualityScore: toNumOrNull(row.quality_score),
   };
 }
 
@@ -50,6 +53,9 @@ export function mapFormToDb(form) {
     entry_time: toStrOrNull(form.entryTime),
     exit_time: toStrOrNull(form.exitTime),
     notes: toStrOrNull(form.notes),
+    setup: toStrOrNull(form.setup),
+    emotion: toStrOrNull(form.emotion),
+    quality_score: toNumOrNull(form.qualityScore),
   };
 }
 
@@ -75,6 +81,9 @@ export function mapTradeToForm(trade) {
     entryTime: s(trade.entryTime),
     exitTime: s(trade.exitTime),
     notes: s(trade.notes),
+    setup: s(trade.setup),
+    emotion: s(trade.emotion),
+    qualityScore: s(trade.qualityScore),
   };
 }
 
@@ -97,4 +106,7 @@ export const EMPTY_FORM = {
   entryTime: '',
   exitTime: '',
   notes: '',
+  setup: '',
+  emotion: '',
+  qualityScore: '',
 };
