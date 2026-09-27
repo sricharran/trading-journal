@@ -10,7 +10,7 @@ export default function Reports({ rows }) {
   const [to, setTo] = useState('');
   const closed = useMemo(() => rows.filter((r) => !isOpenPosition(r)), [rows]);
   const filtered = useMemo(() => closed.filter((r) => {
-    const date = r.type === 'L' ? r.buyDate : r.sellDate;
+    const date = (r.type === 'L' ? r.buyDate : r.sellDate) || '';
     return (!from || date >= from) && (!to || date <= to);
   }), [closed, from, to]);
   const stats = useMemo(() => {
@@ -27,7 +27,7 @@ export default function Reports({ rows }) {
   const daily = useMemo(() => {
     const map = new Map();
     filtered.forEach((r) => {
-      const date = r.type === 'L' ? r.buyDate : r.sellDate;
+      const date = (r.type === 'L' ? r.buyDate : r.sellDate) || '';
       map.set(date, (map.get(date) || 0) + (r.netPL || 0));
     });
     return [...map].sort(([a], [b]) => a.localeCompare(b)).map(([date, pnl]) => ({ date, label: fmtDate(date), pnl }));
@@ -35,13 +35,14 @@ export default function Reports({ rows }) {
   const weekdays = useMemo(() => {
     const values = Array(7).fill(0);
     filtered.forEach((r) => {
-      const date = r.type === 'L' ? r.buyDate : r.sellDate;
+      const date = (r.type === 'L' ? r.buyDate : r.sellDate) || '';
+      if (!date) return;
       const day = new Date(date + 'T00:00:00').getDay();
       values[day] += r.netPL || 0;
     });
     return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, i) => ({ day, pnl: values[i] }));
   }, [filtered]);
-  const sorted = [...filtered].sort((a, b) => (b.type === 'L' ? b.buyDate : b.sellDate).localeCompare(a.type === 'L' ? a.buyDate : a.sellDate));
+  const sorted = [...filtered].sort((a, b) => ((b.type === 'L' ? b.buyDate : b.sellDate) || '').localeCompare((a.type === 'L' ? a.buyDate : a.sellDate) || ''));
   return <div className="page">
     <div className="page-head"><div><h2>Reports</h2><p className="page-note">Review realized performance over a date range.</p></div></div>
     <section className="panel report-filters">
