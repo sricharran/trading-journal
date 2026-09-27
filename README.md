@@ -2,8 +2,10 @@
 
 A private, authenticated trading journal built with React (Vite) and Supabase.
 
-- **Journal** — add, edit, delete and review trades, with running capital on every row.
-- **Dashboard** — headline stats, a month-by-month chart, and the monthly performance table.
+- **Journal** — search, filter, sort, and review trades; edit and delete from trade details.
+- **Dashboard** — P/L, win rate, process score, equity curve, and trade insights.
+- **Reports and Analytics** — date-range reports, drawdown, monthly performance, setup expectancy, and review insights.
+- **Settings** — account, starting capital, password, and JSON export.
 
 All derived numbers (net prices, P/L, ROI, ROCE, risk, RRR, status, target) are calculated in the
 browser from the raw inputs. Nothing derived is ever saved to the database.
@@ -22,10 +24,11 @@ You need Node 18+ and a Supabase project.
    preserve trades in the existing database, replace the email placeholder in
    `supabase/migrate-to-auth.sql` with the account email you just created, then run that migration.
    It assigns existing trades to that account and removes the old anonymous access policy.
-4. **Configure** — copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
+4. **Enable trade review analytics** — run `migrations/add-trade-review-fields.sql` in the Supabase SQL editor. This adds optional setup, emotion, and process-quality fields used by the Journal, Reports, and Analytics pages.
+5. **Configure** — copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
    `VITE_SUPABASE_ANON_KEY` from Supabase → Project Settings → API. Set the same two variables in
    the hosting provider's build environment. Set starting capital after signing in using **Edit base**.
-5. **Run**
+6. **Run**
    ```bash
    npm run dev
    ```
