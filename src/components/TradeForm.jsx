@@ -107,6 +107,12 @@ export default function TradeForm({ trade, onSave, onCancel }) {
             {field('lotSize', 'Lot size', numeric)}
           </div>
           {field('initialStop', 'Initial stop', numeric)}
+          {(form.isSellOpen || form.isBuyOpen || form.trailingStop) && (
+            <>
+              {field('trailingStop', 'Trailing stop / TSL', { ...numeric, placeholder: 'Optional' })}
+              <p className="hint">Leave blank to use the initial stop. The TSL is used for current open risk.</p>
+            </>
+          )}
         </fieldset>
 
         <fieldset className="group">
