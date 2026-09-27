@@ -40,7 +40,7 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
       if (filter === 'closed' && open) return false;
       if (resultFilter === 'win' && (open || pnl <= 0)) return false;
       if (resultFilter === 'loss' && (open || pnl >= 0)) return false;
-      if (query && !row.symbol.toLowerCase().includes(query)) return false;
+      if (query && !String(row.symbol || '').toLowerCase().includes(query)) return false;
       return true;
     });
     const dateOf = (row) => row.type === 'L' ? row.buyDate || '' : row.sellDate || '';
