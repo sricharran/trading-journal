@@ -170,6 +170,17 @@ export default function TradeForm({ trade, onSave, onCancel }) {
             <textarea id="notes" rows={4} value={form.notes} onChange={(e) => update('notes', e.target.value)} />
           </Field>
         </fieldset>
+
+        <fieldset className="group">
+          <legend>Trade review</legend>
+          {field('setup', 'Setup / strategy', { placeholder: 'e.g. Breakout' })}
+          {field('emotion', 'Emotion', { placeholder: 'e.g. Calm, FOMO' })}
+          <Field name="qualityScore" label="Process quality (0–4)">
+            <select id="qualityScore" value={form.qualityScore} onChange={(e) => update('qualityScore', e.target.value)}>
+              <option value="">Not scored</option><option value="0">0 · Poor</option><option value="1">1 · Weak</option><option value="2">2 · Fair</option><option value="3">3 · Good</option><option value="4">4 · Excellent</option>
+            </select>
+          </Field>
+        </fieldset>
       </div>
 
       {saveError && (
