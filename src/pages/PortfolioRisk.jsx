@@ -140,7 +140,7 @@ export default function PortfolioRisk({ rows = [], capital, loading = false }) {
                     </span>
                   </td>
                   <td className="align-right">
-                    <span className={'risk-pill ' + (position.stopBreached ? 'breached' : 'risk-value')}>
+                    <span className={'risk-pill ' + (position.stopBreached ? 'breached' : (position.openRiskPct ?? 0) > 0 ? 'positive' : 'risk-value')}>
                       {position.stopBreached ? 'SL/TSL crossed' : formatPercent(position.openRiskPct)}
                     </span>
                   </td>
