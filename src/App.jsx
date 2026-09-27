@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import Journal from './pages/Journal.jsx';
 import Dashboard from './pages/Dashboard.jsx';
+import PortfolioRisk from './pages/PortfolioRisk.jsx';
 import Login from './pages/Login.jsx';
 import { isSupabaseConfigured, supabase } from './lib/supabaseClient.js';
 import { useTradeStore, useDerivedTrades } from './store/useTradeStore.js';
@@ -8,7 +9,7 @@ import { useAccountSettings } from './store/useAccountSettings.js';
 import { computeDashboardStats } from './lib/calculations.js';
 import { fmtMoney, fmtSignedMoney, plClass } from './lib/format.js';
 
-const PAGES = { journal: 'Journal', dashboard: 'Dashboard' };
+const PAGES = { journal: 'Journal', dashboard: 'Dashboard', risk: 'Portfolio Risk' };
 
 function pageFromHash() {
   const key = window.location.hash.replace('#', '');
@@ -93,7 +94,15 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {settingsLoading ? <p className="empty">Loading accountâ€¦</p> : page === 'journal' ? <Journal /> : <Dashboard startingCapital={startingCapital} />}
+        {settingsLoading ? (
+          <p className="empty">Loading accountâ€¦</p>
+        ) : page === 'journal' ? (
+          <Journal />
+        ) : page === 'risk' ? (
+          <PortfolioRisk />
+        ) : (
+          <Dashboard startingCapital={startingCapital} />
+        )}
       </main>
     </div>
   );
