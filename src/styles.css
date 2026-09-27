@@ -2,22 +2,22 @@
    Tokens
    ------------------------------------------------------------------ */
 :root {
-  --paper: #eef1f4; /* page background, cool ledger paper */
+  --paper: #f0f2f5; /* light workspace background */
   --surface: #ffffff;
-  --ink: #1c2b3a; /* navy ink: text + masthead */
-  --muted: #5b6b7b;
-  --rule: #d3dae2;
-  --gain: #1f7a5a;
-  --loss: #b23a48;
-  --open: #b7791f;
-  --open-tint: #fbf4e6;
-  --accent: #2d4f7c;
+  --ink: #111827; /* primary text */
+  --muted: #6b7280;
+  --rule: #e5e7eb;
+  --gain: #059669;
+  --loss: #dc2626;
+  --open: #b45309;
+  --open-tint: #fffaf0;
+  --accent: #1a56db;
 
-  --font-body: 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-figure: 'Space Grotesk', var(--font-body);
+  --font-body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-figure: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
 
-  --radius-sm: 3px;
-  --radius-md: 6px;
+  --radius-sm: 7px;
+  --radius-md: 10px;
   --space: 1rem;
   --max: 1400px;
 
@@ -1514,4 +1514,51 @@ code {
   .stats.stats-secondary { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dashboard-equity-panel { padding: 0.9rem 0.75rem; }
   .dashboard-panel-head > strong { font-size: 0.95rem; }
+}
+
+
+/* Reference finish: TradeLog's blue, neutral workspace */
+body { font-size: 14px; letter-spacing: -0.01em; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+.workspace-header { position: sticky; top: 0; z-index: 10; min-height: 4.75rem; margin: 0; padding: 0.85rem 1.75rem; border-width: 0 0 1px; border-radius: 0; background: rgba(255,255,255,0.96); backdrop-filter: blur(12px); }
+.workspace-header h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.015em; }
+.workspace-header p { font-size: 0.75rem; }
+.workspace-status { border-radius: 0.45rem; padding: 0.35rem 0.65rem; font-size: 0.7rem; }
+.workspace .content { padding: 1.25rem 1.75rem 2rem; }
+.sidebar-brand { padding: 1rem; }
+.sidebar-brand-mark { border-radius: 0.65rem; background: linear-gradient(135deg,#1a56db,#2563eb); box-shadow: 0 3px 12px rgba(37,99,235,0.22); }
+.sidebar-link[aria-current='page'] { background: rgba(26,86,219,0.07); color: #2563eb; box-shadow: inset 3px 0 0 #2563eb; }
+.sidebar-link[aria-current='page'] .sidebar-icon { background: rgba(26,86,219,0.14); color: #1a56db; }
+.sidebar-add-trade { border-radius: 0.45rem; background: #2563eb; }
+.sidebar-add-trade:hover { background: #1e40af; }
+.workspace .page-head { min-height: 4.2rem; margin: 0 0 0.75rem; padding: 0.8rem 1rem; border: 1px solid rgba(0,0,0,0.06); border-radius: 0.6rem; background: var(--surface); }
+.workspace .page-head h2 { font-size: 1rem; letter-spacing: -0.015em; }
+.workspace .page-tools { gap: 0.6rem; }
+.workspace .filter { border-color: #e5e7eb; border-radius: 0.45rem; }
+.workspace .filter button { padding: 0.45rem 0.75rem; font-size: 0.82rem; }
+.workspace .filter button.on { background: #1a56db; color: white; }
+.workspace .btn.primary { border-radius: 0.45rem; background: #2563eb; }
+.workspace .btn.primary:hover:not(:disabled) { background: #1e40af; }
+.workspace .table-wrap { border-color: rgba(0,0,0,0.06); border-radius: 0.6rem; }
+.workspace .ledger { font-size: 0.82rem; }
+.workspace .ledger th, .workspace .ledger td { padding: 0.65rem 0.75rem; border-bottom-color: #eceef1; }
+.workspace .ledger thead th { color: #6b7280; background: #f7f8fa; border-bottom: 1px solid #e5e7eb; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.045em; text-transform: uppercase; }
+.workspace .ledger tbody tr:hover > * { background: #f8fafc; }
+.workspace .ledger tr.is-open > * { background: #fffaf0; }
+.workspace .ledger tr.is-open:hover > * { background: #fff4df; }
+.workspace .ledger .sticky { background: var(--surface); }
+.workspace .ledger tr.is-open > .sticky { background: #fffaf0; }
+.workspace .ledger tr.is-open:hover > .sticky { background: #fff4df; }
+.workspace .ledger .symbol { font-family: var(--font-body); }
+.workspace .ledger .sub { font-size: 0.72rem; }
+.workspace .account-summary { border-color: rgba(0,0,0,0.06); border-radius: 0.6rem; box-shadow: 0 1px 2px rgba(0,0,0,0.025); }
+.workspace .dashboard-equity-panel { border-color: rgba(0,0,0,0.06); }
+@media (max-width: 850px) {
+  .workspace-header { padding: 0.75rem 1rem; }
+  .workspace .content { padding: 0.9rem 1rem 1.5rem; }
+}
+@media (max-width: 520px) {
+  .workspace .content { padding: 0.75rem 0.65rem 1rem; }
+  .workspace .page-head { align-items: flex-start; }
+  .workspace .page-tools { width: auto; }
+  .workspace .filter button { padding: 0.4rem 0.55rem; }
 }
