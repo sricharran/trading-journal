@@ -10,9 +10,9 @@ const FILTERS = [
   { key: 'closed', label: 'Closed' },
 ];
 
-export default function Journal() {
+export default function Journal({ startingCapital = 0 }) {
   const { loading, error, addTrade, updateTrade, deleteTrade, fetchTrades } = useTradeStore();
-  const rows = useDerivedTrades();
+  const rows = useDerivedTrades(startingCapital);
 
   // null = form hidden, 'new' = adding, otherwise the trade being edited
   const [editing, setEditing] = useState(null);
