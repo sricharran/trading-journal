@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import Journal from './pages/Journal.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import PortfolioRisk from './pages/PortfolioRisk.jsx';
+import Reports from './pages/Reports.jsx';
+import Analytics from './pages/Analytics.jsx';
+import Settings from './pages/Settings.jsx';
 import Login from './pages/Login.jsx';
 import { isSupabaseConfigured, supabase } from './lib/supabaseClient.js';
 import { useTradeStore, useDerivedTrades } from './store/useTradeStore.js';
@@ -9,7 +12,7 @@ import { useAccountSettings } from './store/useAccountSettings.js';
 import { computeDashboardStats } from './lib/calculations.js';
 import { fmtMoney, fmtSignedMoney, plClass } from './lib/format.js';
 
-const PAGES = { risk: 'Live Trade', journal: 'Journal', dashboard: 'Dashboard' };
+const PAGES = { risk: 'Live Trade', journal: 'Journal', dashboard: 'Dashboard', reports: 'Reports', analytics: 'Analytics', settings: 'Settings' };
 
 function pageFromHash() {
   const key = window.location.hash.replace('#', '');
@@ -40,6 +43,7 @@ export default function App() {
   const fetchTrades = useTradeStore((s) => s.fetchTrades);
   const clearTrades = useTradeStore((s) => s.clearTrades);
   const tradesLoading = useTradeStore((s) => s.loading);
+  const rawTrades = useTradeStore((s) => s.trades);
   const { startingCapital, loading: settingsLoading, error: settingsError, saveStartingCapital } = useAccountSettings(user?.id);
   const rows = useDerivedTrades(startingCapital);
   const stats = computeDashboardStats(rows);
@@ -109,6 +113,14 @@ export default function App() {
               Journal
             </a>
           </section>
+          <section className="sidebar-nav-group">
+            <h2>Analysis</h2>
+            <a href="#reports" className="sidebar-link" aria-current={page === 'reports' ? 'page' : undefined}><span className="sidebar-icon" aria-hidden="true">▥</span>Reports</a>
+            <a href="#analytics" className="sidebar-link" aria-current={page === 'analytics' ? 'page' : undefined}><span className="sidebar-icon" aria-hidden="true">◌</span>Analytics</a>
+          </section>
+          <section className="sidebar-nav-group sidebar-nav-settings">
+            <a href="#settings" className="sidebar-link" aria-current={page === 'settings' ? 'page' : undefined}><span className="sidebar-icon" aria-hidden="true">⚙</span>Settings</a>
+          </section>
         </nav>
 
         <div className="sidebar-footer">
@@ -160,6 +172,12 @@ export default function App() {
             <Journal startingCapital={startingCapital} addTradeRequest={addTradeRequest} />
           ) : page === 'risk' ? (
             <PortfolioRisk rows={rows} capital={stats.latestCapital ?? startingCapital} loading={tradesLoading} />
+          ) : page === 'reports' ? (
+            <Reports rows={rows} />
+          ) : page === 'analytics' ? (
+            <Analytics rows={rows} startingCapital={startingCapital} />
+          ) : page === 'settings' ? (
+            <Settings startingCapital={startingCapital} onSave={saveStartingCapital} user={user} trades={rawTrades} />
           ) : (
             <Dashboard startingCapital={startingCapital} />
           )}
