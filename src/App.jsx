@@ -46,7 +46,7 @@ export default function App() {
   }, []);
 
   if (!isSupabaseConfigured) return <SetupNotice />;
-  if (!authReady) return <p className="auth-loading">Loading secure session…</p>;
+  if (!authReady) return <p className="auth-loading">Loading secure sessionâ€¦</p>;
   if (!user) return <Login />;
 
   return (
@@ -93,7 +93,7 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal /> : <Dashboard />}
+        {settingsLoading ? <p className="empty">Loading accountâ€¦</p> : page === 'journal' ? <Journal /> : <Dashboard startingCapital={startingCapital} />}
       </main>
     </div>
   );
@@ -140,3 +140,4 @@ function SetupNotice() {
     </section>
   );
 }
+
