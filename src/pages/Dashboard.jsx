@@ -30,8 +30,35 @@ export default function Dashboard({ startingCapital }) {
 
   return (
     <div className="page">
-      <dl className="stats stats-primary">\n        <StatCard label="Total net P/L" value={fmtSignedMoney(stats.totalNetPL)} tone={plClass(stats.totalNetPL)} detail={stats.totalTrades + " closed trades"} />\n        <StatCard label="Win rate" value={fmtPct(stats.winRate, 1)} detail={stats.totalTrades + " closed trades"} />\n        <StatCard label="Profit factor" value={fmtRatio(stats.profitFactor)} detail="Gross profit / gross loss" />\n        <StatCard\n          label="Open exposure"\n          value={fmtPct(stats.openExposurePct, 1)}\n          detail={"of " + fmtMoney(stats.latestCapital) + " capital"}\n        />\n      </dl>\n\n      <dl className="stats stats-secondary">\n        <StatCard label="Total trades" value={stats.totalTrades} />\n        <StatCard label="Avg winner" value={fmtSignedMoney(stats.avgWinner)} tone={plClass(stats.avgWinner)} />\n        <StatCard label="Avg loser" value={fmtSignedMoney(stats.avgLoser)} tone={plClass(stats.avgLoser)} />\n        <StatCard label="Expectancy" value={fmtSignedMoney(stats.expectancy)} tone={plClass(stats.expectancy)} detail="per trade" />\n        <StatCard label="Avg RRR" value={fmtRatio(stats.avgRRR)} />\n        <StatCard label="Avg hold" value={fmtDays(stats.avgHoldDays)} />\n        <StatCard label="Open trades" value={stats.openTrades} />\n      </dl>\n\n      <section className="panel">
-        <h3>Month by month</h3>
+      <dl className="stats stats-primary">
+        <StatCard label="Total net P/L" value={fmtSignedMoney(stats.totalNetPL)} tone={plClass(stats.totalNetPL)} detail={stats.totalTrades + " closed trades"} />
+        <StatCard label="Win rate" value={fmtPct(stats.winRate, 1)} detail={stats.totalTrades + " closed trades"} />
+        <StatCard label="Profit factor" value={fmtRatio(stats.profitFactor)} detail="Gross profit / gross loss" />
+        <StatCard
+          label="Open exposure"
+          value={fmtPct(stats.openExposurePct, 1)}
+          detail={"of " + fmtMoney(stats.latestCapital) + " capital"}
+        />
+      </dl>
+
+      <dl className="stats stats-secondary">
+        <StatCard label="Total trades" value={stats.totalTrades} />
+        <StatCard label="Avg winner" value={fmtSignedMoney(stats.avgWinner)} tone={plClass(stats.avgWinner)} />
+        <StatCard label="Avg loser" value={fmtSignedMoney(stats.avgLoser)} tone={plClass(stats.avgLoser)} />
+        <StatCard label="Expectancy" value={fmtSignedMoney(stats.expectancy)} tone={plClass(stats.expectancy)} detail="per trade" />
+        <StatCard label="Avg RRR" value={fmtRatio(stats.avgRRR)} />
+        <StatCard label="Avg hold" value={fmtDays(stats.avgHoldDays)} />
+        <StatCard label="Open trades" value={stats.openTrades} />
+      </dl>
+
+      <section className="panel dashboard-equity-panel">
+        <div className="dashboard-panel-head">
+          <div>
+            <h3>Equity curve</h3>
+            <p>Cumulative P/L with monthly results</p>
+          </div>
+          <strong className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</strong>
+        </div>
         {chartData.length ? (
           <div className="chart">
             <ResponsiveContainer width="100%" height={340}>
