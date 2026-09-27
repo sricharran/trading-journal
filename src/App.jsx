@@ -9,7 +9,7 @@ import { useAccountSettings } from './store/useAccountSettings.js';
 import { computeDashboardStats } from './lib/calculations.js';
 import { fmtMoney, fmtSignedMoney, plClass } from './lib/format.js';
 
-const PAGES = { journal: 'Journal', dashboard: 'Dashboard', risk: 'Portfolio Risk' };
+const PAGES = { risk: 'Live Trade', journal: 'Journal', dashboard: 'Dashboard' };
 
 function pageFromHash() {
   const key = window.location.hash.replace('#', '');
