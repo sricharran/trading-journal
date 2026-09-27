@@ -2,8 +2,8 @@
 
 A private, authenticated trading journal built with React (Vite) and Supabase.
 
-- **Journal** â€” add, edit, delete and review trades, with running capital on every row.
-- **Dashboard** â€” headline stats, a month-by-month chart, and the monthly performance table.
+- **Journal** — add, edit, delete and review trades, with running capital on every row.
+- **Dashboard** — headline stats, a month-by-month chart, and the monthly performance table.
 
 All derived numbers (net prices, P/L, ROI, ROCE, risk, RRR, status, target) are calculated in the
 browser from the raw inputs. Nothing derived is ever saved to the database.
@@ -16,14 +16,14 @@ You need Node 18+ and a Supabase project.
    ```bash
    npm install
    ```
-2. **Set up authentication** â€” create your account in Supabase Authentication, and turn off public
+2. **Set up authentication** — create your account in Supabase Authentication, and turn off public
    sign-ups. The app has sign-in only; it does not offer account creation.
-3. **Set up the database** â€” for a fresh project, run `supabase/schema.sql` in the SQL editor. To
+3. **Set up the database** — for a fresh project, run `supabase/schema.sql` in the SQL editor. To
    preserve trades in the existing database, replace the email placeholder in
    `supabase/migrate-to-auth.sql` with the account email you just created, then run that migration.
    It assigns existing trades to that account and removes the old anonymous access policy.
-4. **Configure** â€” copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
-   `VITE_SUPABASE_ANON_KEY` from Supabase â†’ Project Settings â†’ API. Set the same two variables in
+4. **Configure** — copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
+   `VITE_SUPABASE_ANON_KEY` from Supabase → Project Settings → API. Set the same two variables in
    the hosting provider's build environment. Set starting capital after signing in using **Edit base**.
 5. **Run**
    ```bash
@@ -32,7 +32,7 @@ You need Node 18+ and a Supabase project.
    Open the URL Vite prints (usually http://localhost:5173).
 
 Other scripts: `npm run build` (production build to `dist/`), `npm test` (calculation tests,
-uses Node's built-in test runner â€” no extra packages).
+uses Node's built-in test runner — no extra packages).
 
 The browser uses Supabase's publishable/anon key, which is expected to be visible in a static app.
 Database access is protected by row-level security and requires an authenticated session. Keep the
@@ -46,7 +46,7 @@ deploys on each push. GitHub Pages on the free plan requires a public repository
 recommended option for this private project.
 
 1. Create a private GitHub repository and push the `main` branch.
-2. In Cloudflare, open **Workers & Pages â†’ Create application â†’ Pages â†’ Connect to Git** and select
+2. In Cloudflare, open **Workers & Pages → Create application → Pages → Connect to Git** and select
    the repository. Limit the GitHub App installation to this repository.
 3. Set the build command to `npm run build`, the output directory to `dist`, and add
    `VITE_SUPABASE_URL` plus `VITE_SUPABASE_ANON_KEY` as build environment variables.
@@ -87,23 +87,23 @@ original sheet's quirks. Things worth knowing:
   adjustments and realized trade P/L in entry order (`created_at`). Open P/L stays unrealized until
   close.
   ROCE, risk on capital and allocation all divide by this figure. With a starting capital of 0 and
-  no adjustments, those columns show `â€”` (the sheet would show `#DIV/0!`).
+  no adjustments, those columns show `—` (the sheet would show `#DIV/0!`).
 - **Blank cells count as 0** in arithmetic, as in Excel.
 - **Trade status** returns `'Closed'`, or a *number* (the open position's value) for open trades.
   The journal shows that number as "Open" with the value underneath.
-- **Open shorts show "Closed\*"** â€” the sheet's status formula only checks whether there's a sell
+- **Open shorts show "Closed\*"** — the sheet's status formula only checks whether there's a sell
   date, and a short always has one. So an uncovered short is reported as Closed and is counted in
   the dashboard's closed-trade stats. This is ported as-is so the numbers match the sheet; the row
   is still styled as open and marked with `*`.
-- **Open P/L** â€” open trades' P/L is marked to the saved LTP, less estimated closing brokerage. The initial stop remains the risk reference.
-- **Percentages** â€” ROI, ROCE and risk on capital are fractions shown as %, like Excel.
-  Allocation is already Ã— 100 in the spec.
-- **Expectancy** â€” when there are no winners (or no losers), the missing average is treated as 0.
+- **Open P/L** — open trades' P/L is marked to the saved LTP, less estimated closing brokerage. The initial stop remains the risk reference.
+- **Percentages** — ROI, ROCE and risk on capital are fractions shown as %, like Excel.
+  Allocation is already × 100 in the spec.
+- **Expectancy** — when there are no winners (or no losers), the missing average is treated as 0.
   The sheet shows `#DIV/0!` there; the result is otherwise identical.
-- **Profit factor** â€” shows `â€”` when there are no wins or no losses.
-- **Open exposure** â€” not captured from the sheet, so defined as: value of open positions Ã· latest
+- **Profit factor** — shows `—` when there are no wins or no losses.
+- **Open exposure** — not captured from the sheet, so defined as: value of open positions ÷ latest
   running capital.
-- **Monthly table** â€” closed trades grouped by the month of their buy date.
+- **Monthly table** — closed trades grouped by the month of their buy date.
 
 ## Status
 
@@ -117,5 +117,4 @@ original sheet's quirks. Things worth knowing:
 | Original Allocation / Original Risk (pyramiding) | Deferred, as planned for v1 |
 
 **Before calling v1 done:** enter a few trades from the original Excel tracker and check the
-Journal and Dashboard numbers against the sheet â€” that comparison needs your real data.
-
+Journal and Dashboard numbers against the sheet — that comparison needs your real data.
