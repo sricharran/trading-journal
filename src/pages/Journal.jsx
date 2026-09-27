@@ -19,6 +19,9 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
   const [editing, setEditing] = useState(null);
   const [filter, setFilter] = useState('all');
   const [selectedTrade, setSelectedTrade] = useState(null);
+  const [search, setSearch] = useState('');
+  const [resultFilter, setResultFilter] = useState('all');
+  const [sortOrder, setSortOrder] = useState('newest');
 
   useEffect(() => {
     if (addTradeRequest > 0) {
@@ -29,11 +32,25 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
 
   // Capital is computed oldest-first; the journal shows newest first.
   const visible = useMemo(() => {
-    const newestFirst = [...rows].reverse();
-    if (filter === 'open') return newestFirst.filter(isOpenPosition);
-    if (filter === 'closed') return newestFirst.filter((r) => !isOpenPosition(r));
-    return newestFirst;
-  }, [rows, filter]);
+    const query = search.trim().toLowerCase();
+    const filtered = rows.filter((row) => {
+      const open = isOpenPosition(row);
+      const pnl = Number(row.netPL || 0);
+      if (filter === 'open' && !open) return false;
+      if (filter === 'closed' && open) return false;
+      if (resultFilter === 'win' && (open || pnl <= 0)) return false;
+      if (resultFilter === 'loss' && (open || pnl >= 0)) return false;
+      if (query && !row.symbol.toLowerCase().includes(query)) return false;
+      return true;
+    });
+    const dateOf = (row) => row.type === 'L' ? row.buyDate || '' : row.sellDate || '';
+    return filtered.sort((a, b) => {
+      if (sortOrder === 'oldest') return dateOf(a).localeCompare(dateOf(b));
+      if (sortOrder === 'highest') return (b.netPL || 0) - (a.netPL || 0);
+      if (sortOrder === 'lowest') return (a.netPL || 0) - (b.netPL || 0);
+      return dateOf(b).localeCompare(dateOf(a));
+    });
+  }, [rows, filter, resultFilter, search, sortOrder]);
 
   async function handleSave(form) {
     if (editing === 'new') await addTrade(form);
@@ -61,7 +78,7 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
   return (
     <div className="page">
       <div className="page-head">
-        <h2>Journal</h2>
+        <div><h2>Journal <span className="journal-count">{visible.length}</span></h2><p className="page-note">All trades · Stocks · INR</p></div>
         <div className="page-tools">
           <div className="filter" role="group" aria-label="Show trades">
             {FILTERS.map((f) => (
@@ -76,6 +93,7 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
               </button>
             ))}
           </div>
+          <button type="button" className="btn ghost" onClick={() => window.print()}>↓ Export PDF</button>
           {!editing && (
             <button type="button" className="btn primary" onClick={() => setEditing('new')}>
               Add trade
@@ -84,6 +102,15 @@ export default function Journal({ startingCapital, addTradeRequest = 0 }) {
         </div>
       </div>
 
+      <section className="journal-filterbar" aria-label="Filter trades">
+        <input type="search" aria-label="Search by symbol" placeholder="Search symbol…" value={search} onChange={(event) => setSearch(event.target.value)} />
+        <select aria-label="Filter results" value={resultFilter} onChange={(event) => setResultFilter(event.target.value)}>
+          <option value="all">All results</option><option value="win">Wins</option><option value="loss">Losses</option>
+        </select>
+        <select aria-label="Sort trades" value={sortOrder} onChange={(event) => setSortOrder(event.target.value)}>
+          <option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="highest">Highest P/L</option><option value="lowest">Lowest P/L</option>
+        </select>
+      </section>
       {editing && (
         <TradeForm
           key={editing === 'new' ? 'new' : editing.id}
