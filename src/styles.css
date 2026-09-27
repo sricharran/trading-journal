@@ -1725,3 +1725,10 @@ body { font-size: 14px; letter-spacing: -0.01em; -webkit-font-smoothing: antiali
 @media (max-width: 480px) {
  .quality-review-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
+
+.trading-score-value { color: var(--accent); font-size: 1.6rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.score-bars { display: grid; gap: 0.42rem; }
+.score-bars > div { display: grid; grid-template-columns: 5.5rem minmax(0,1fr); align-items: center; gap: 0.5rem; }
+.score-bars span { color: var(--muted); font-size: 0.66rem; }
+.score-bars i { height: 0.38rem; overflow: hidden; border-radius: 999px; background: #eef0f3; }
+.score-bars b { display: block; height: 100%; border-radius: inherit; background: #2563eb; }
