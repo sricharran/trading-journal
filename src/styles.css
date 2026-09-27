@@ -1699,3 +1699,29 @@ body { font-size: 14px; letter-spacing: -0.01em; -webkit-font-smoothing: antiali
   .heatmap-day { min-height: 2.5rem; padding: 0.25rem; }
   .heatmap-day b { font-size: 0.5rem; }
 }
+
+
+.field select { width: 100%; padding: 0.5rem 0.6rem; border: 1px solid var(--rule); border-radius: var(--radius-sm); background: var(--surface); color: var(--ink); font: inherit; }
+.quality-badge { display: inline-block; padding: 0.13rem 0.42rem; border: 1px solid transparent; border-radius: 0.35rem; font-size: 0.68rem; font-weight: 700; }
+.quality-badge.good { color: var(--gain); background: rgba(5,150,105,0.08); border-color: rgba(5,150,105,0.16); }
+.quality-badge.poor { color: var(--loss); background: rgba(220,38,38,0.06); border-color: rgba(220,38,38,0.14); }
+.dashboard-insights-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 0.8rem; margin-bottom: 0.8rem; }
+.emotion-insight-row { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; padding: 0.55rem 0; border-top: 1px solid #eef0f3; }
+.emotion-insight-row span { display: grid; font-size: 0.8rem; font-weight: 600; }
+.emotion-insight-row small { color: var(--muted); font-size: 0.68rem; font-weight: 400; }
+.emotion-insight-row strong { font-size: 0.82rem; font-variant-numeric: tabular-nums; }
+.quality-review-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 0.5rem; }
+.quality-review-grid > div { display: grid; justify-items: center; gap: 0.2rem; min-width: 0; padding: 0.6rem 0.3rem; border: 1px solid #eef0f3; border-radius: 0.45rem; background: #f7f8fa; text-align: center; }
+.quality-review-grid strong { font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.quality-review-grid span { color: var(--muted); font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.025em; }
+.analytics-discipline-panel, .analytics-expectancy-panel, .analytics-emotion-panel { margin-bottom: 0.8rem; padding: 1rem 1.1rem; border-color: rgba(0,0,0,0.06); border-radius: 0.6rem; }
+.analytics-discipline-panel .dashboard-panel-head h3, .analytics-expectancy-panel .dashboard-panel-head h3, .analytics-emotion-panel .dashboard-panel-head h3 { font-size: 0.9rem; }
+.analytics-expectancy-panel .table-wrap { border: 0; }
+.report-filters .field select { min-height: 2.5rem; border-color: #e5e7eb; border-radius: 0.45rem; }
+
+@media (max-width: 700px) {
+ .dashboard-insights-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+ .quality-review-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
