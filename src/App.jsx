@@ -66,7 +66,6 @@ export default function App() {
             </nav>
           </div>
 
-     </dl>
           <div className="account-menu">
             <span>{user.email}</span>
             <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
