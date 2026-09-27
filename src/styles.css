@@ -679,7 +679,7 @@ code {
   margin: 0 -0.5rem 1.25rem;
 }
 
-/* Portfolio risk prototype: uses local sample data. */
+/* Live Trade summary and open-position tracker. */
 .portfolio-risk {
   --risk-panel: var(--surface);
   --risk-text: var(--ink);
@@ -765,7 +765,7 @@ code {
 }
 .risk-summary-card p {
   margin: 0.35rem 0 0;
-  font-size: clamp(1.65rem, 3.2vw, 2.5rem);
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
   font-weight: 700;
   letter-spacing: -0.045em;
   font-variant-numeric: tabular-nums;
