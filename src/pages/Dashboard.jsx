@@ -1,10 +1,9 @@
 import { useMemo } from 'react';
 import {
   ResponsiveContainer,
-  ComposedChart,
+  BarChart,
   Bar,
   Cell,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -25,7 +24,6 @@ export default function Dashboard({ startingCapital }) {
   const chartData = months.map((m) => ({
     label: fmtMonth(m.year, m.month),
     gross: Number(m.grossPL.toFixed(2)),
-    cumulative: Number(m.cumulativePL.toFixed(2)),
   }));
 
   return (
@@ -58,7 +56,7 @@ export default function Dashboard({ startingCapital }) {
         {chartData.length ? (
           <div className="chart">
             <ResponsiveContainer width="100%" height={260}>
-              <ComposedChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+              <BarChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
                 <CartesianGrid stroke="var(--rule)" vertical={false} />
                 <XAxis dataKey="label" tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis
@@ -70,7 +68,7 @@ export default function Dashboard({ startingCapital }) {
                 />
                 <ReferenceLine y={0} stroke="var(--ink)" strokeOpacity={0.4} />
                 <Tooltip
-                  formatter={(v, name) => [fmtSignedMoney(v), name === 'gross' ? 'Month P/L' : 'Cumulative']}
+                  formatter={(v) => [fmtSignedMoney(v), 'Month P/L']}
                   contentStyle={{ borderRadius: 4, border: '1px solid var(--rule)', fontSize: 13 }}
                 />
                 <Bar dataKey="gross" maxBarSize={36}>
@@ -78,8 +76,7 @@ export default function Dashboard({ startingCapital }) {
                     <Cell key={d.label} fill={d.gross >= 0 ? 'var(--gain)' : 'var(--loss)'} fillOpacity={0.75} />
                   ))}
                 </Bar>
-                <Line type="monotone" dataKey="cumulative" stroke="var(--accent)" strokeWidth={2} dot={{ r: 3 }} />
-              </ComposedChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         ) : null}
