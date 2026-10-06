@@ -70,12 +70,12 @@ export default function App() {
               <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
             </div>
             <div>
-              <dt>Net P/L, closed</dt>
+              <dt>Realised P/L</dt>
               <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
             </div>
             <div>
-              <dt>Open</dt>
-              <dd>{stats.openTrades}</dd>
+              <dt>Unrealised P/L</dt>
+              <dd className={plClass(stats.unrealizedPL)}>{fmtSignedMoney(stats.unrealizedPL)}</dd>
             </div>
           </dl>
           <div className="account-menu">

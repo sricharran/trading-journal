@@ -438,6 +438,94 @@ code {
   text-align: right;
 }
 
+.trade-link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.trade-link:hover {
+  text-decoration: underline;
+}
+.journal-ledger th,
+.journal-ledger td {
+  padding-top: 0.8rem;
+  padding-bottom: 0.8rem;
+}
+.journal-ledger {
+  table-layout: fixed;
+  min-width: 850px;
+}
+.journal-ledger .col-symbol { width: 17%; }
+.journal-ledger .col-opened { width: 14%; }
+.journal-ledger .col-side { width: 10%; }
+.journal-ledger .col-qty { width: 8%; }
+.journal-ledger .col-price { width: 10%; }
+.journal-ledger .col-pl { width: 12%; }
+.journal-ledger .col-status { width: 9%; }
+
+.trade-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgb(13 25 37 / 55%);
+}
+.trade-dialog {
+  width: min(46rem, 100%);
+  max-height: min(88vh, 54rem);
+  overflow-y: auto;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 25%);
+}
+.trade-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+.trade-dialog-head h2 {
+  font-size: 1.4rem;
+}
+.trade-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+.trade-details > div {
+  padding: 0.65rem 0.75rem 0.65rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.trade-details dt {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+.trade-details dd {
+  margin: 0.15rem 0 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+.trade-notes {
+  margin-top: 1rem;
+}
+.trade-notes h3 {
+  font-size: 1rem;
+}
+.trade-notes p {
+  margin: 0.35rem 0 0;
+  white-space: pre-wrap;
+}
+
 .note-dot {
   display: inline-block;
   width: 6px;
@@ -695,7 +783,8 @@ code {
     gap: 1rem 1.75rem;
   }
   .trade-form,
-  .panel {
+  .panel,
+  .trade-dialog {
     padding: 1rem;
   }
   .page-tools {

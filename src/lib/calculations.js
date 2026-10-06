@@ -155,11 +155,11 @@ export function calcTradeStatus(trade, netBuyValue, netSellValue) {
  * All derived values for one trade.
  *
  * @param {object} trade          camelCase trade (see mapTradeFromDb)
- * @param {number} closingCapital running capital as of this row
+ * @param {number} capitalAtEntry running capital after this row's adjustment, before its result
  * @param {object} [options]
  * @param {number} [options.today] day serial number for "today" (tests)
  */
-export function deriveTrade(trade, closingCapital, { today = todayDayNumber() } = {}) {
+export function deriveTrade(trade, capitalAtEntry, { today = todayDayNumber() } = {}) {
   const rate = getRate(trade.contract);
   const qty = n(trade.lots) * n(trade.lotSize);
 
@@ -173,14 +173,14 @@ export function deriveTrade(trade, closingCapital, { today = todayDayNumber() } 
   const netPL = isNum(netDiff) ? qty * netDiff : null;
 
   const roiPct = trade.type === 'L' ? div(netDiff, netBuyPrice) : div(netDiff, netSellPrice);
-  const rocePct = div(netPL, closingCapital);
+  const rocePct = div(netPL, capitalAtEntry);
 
   const stop = n(trade.initialStop);
   let riskOnCapital = null;
   if (trade.type === 'L') {
-    riskOnCapital = div((netBuyPrice - stop / (1 + rate)) * qty, closingCapital);
+    riskOnCapital = div((netBuyPrice - stop / (1 + rate)) * qty, capitalAtEntry);
   } else if (trade.type === 'S') {
-    riskOnCapital = div((stop * (1 + rate) - netSellPrice) * qty, closingCapital);
+    riskOnCapital = div((stop * (1 + rate) - netSellPrice) * qty, capitalAtEntry);
   }
 
   const rewardToRisk = isNum(riskOnCapital) ? div(rocePct, Math.abs(riskOnCapital)) : null;
@@ -190,12 +190,13 @@ export function deriveTrade(trade, closingCapital, { today = todayDayNumber() } 
     isNum(rocePct) && isNum(riskOnCapital) ? (rocePct >= -riskOnCapital ? 'J' : 'L') : null;
 
   const allocationAmount = trade.type === 'L' ? netBuyValue : netSellValue;
-  const allocationRatio = div(allocationAmount, closingCapital);
+  const allocationRatio = div(allocationAmount, capitalAtEntry);
   const allocationPct = allocationRatio === null ? null : allocationRatio * 100;
 
   return {
     rate,
-    closingCapital,
+    capitalAtEntry,
+    closingCapital: capitalAtEntry,
     netBuyPrice,
     netBuyValue,
     netSellPrice,
@@ -256,9 +257,9 @@ function avg(values) {
   return values.length ? sum(values) / values.length : null;
 }
 
-/** Rows the dashboard treats as closed (tradeStatus === 'Closed'). */
+/** Rows that no longer have an open position. */
 export function closedTrades(derivedRows) {
-  return derivedRows.filter((row) => row.tradeStatus === 'Closed');
+  return derivedRows.filter((row) => !isOpenPosition(row));
 }
 
 /**
@@ -291,6 +292,10 @@ export function computeDashboardStats(derivedRows) {
   const openTrades =
     derivedRows.filter((r) => r.isSellOpen).length + derivedRows.filter((r) => r.isBuyOpen).length;
 
+  const unrealizedPL = sum(
+    derivedRows.filter(isOpenPosition).map((r) => r.netPL).filter(isNum)
+  );
+
   // Not captured from the sheet (TradeSheet!S1) — defined fresh:
   // sum of open position value / latest running capital.
   const openValue = sum(
@@ -309,6 +314,7 @@ export function computeDashboardStats(derivedRows) {
     totalTrades,
     winRate,
     totalNetPL,
+    unrealizedPL,
     profitFactor,
     avgWinner,
     avgLoser,
