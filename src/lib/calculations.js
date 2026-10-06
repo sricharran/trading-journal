@@ -332,15 +332,16 @@ export function computeDashboardStats(derivedRows) {
 // ---------------------------------------------------------------------------
 
 /**
- * Closed trades grouped by MONTH(buyDate), YEAR(buyDate), chronological.
- * Closed trades with no buy date can't be placed in a month and are skipped.
+ * Closed trades grouped by their close month, chronologically. Longs close
+ * on sellDate; shorts close when covered on buyDate.
  */
 export function computeMonthlyPerformance(derivedRows) {
   const groups = new Map();
 
   for (const row of closedTrades(derivedRows)) {
-    if (isBlank(row.buyDate)) continue;
-    const key = String(row.buyDate).slice(0, 7); // 'YYYY-MM'
+    const closeDate = row.type === 'S' ? row.buyDate : row.sellDate;
+    if (isBlank(closeDate)) continue;
+    const key = String(closeDate).slice(0, 7); // 'YYYY-MM'
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(row);
   }

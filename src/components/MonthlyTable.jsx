@@ -1,6 +1,6 @@
 import { fmtMonth, fmtPct, fmtSignedMoney, plClass } from '../lib/format.js';
 
-/** Monthly performance of closed trades, grouped by buy date. */
+/** Monthly performance of closed trades, grouped by close date. */
 export default function MonthlyTable({ months }) {
   if (!months.length) {
     return <p className="empty">Close a trade to see its month here.</p>;
