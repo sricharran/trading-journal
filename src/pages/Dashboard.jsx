@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -16,7 +16,7 @@ import { useDerivedTrades } from '../store/useTradeStore.js';
 import { computeDashboardStats, computeMonthlyPerformance } from '../lib/calculations.js';
 import { fmtMonth, fmtPct, fmtRatio, fmtSignedMoney, fmtDays, fmtMoney, plClass } from '../lib/format.js';
 
-export default function Dashboard({ startingCapital }) {
+export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
   const rows = useDerivedTrades(startingCapital);
   const stats = useMemo(() => computeDashboardStats(rows), [rows]);
   const months = useMemo(() => computeMonthlyPerformance(rows), [rows]);
@@ -26,14 +26,42 @@ export default function Dashboard({ startingCapital }) {
     gross: Number(m.grossPL.toFixed(2)),
   }));
 
+  const performanceMessage = stats.totalTrades === 0 && rows.length > 0
+    ? 'Your open positions are in the journal. Close a trade to start seeing realised performance patterns.'
+    : stats.totalTrades === 0
+      ? 'Log your first trade to start building a clear picture of your performance.'
+      : stats.totalTrades < 10
+        ? `You have ${stats.totalTrades} closed ${stats.totalTrades === 1 ? 'trade' : 'trades'} logged. Keep journaling before drawing conclusions from the pattern.`
+        : stats.expectancy > 0
+          ? `Your average result is ${fmtSignedMoney(stats.expectancy)} per closed trade across ${stats.totalTrades} trades.`
+          : `Review your last trades for repeatable patterns. Your average result is ${fmtSignedMoney(stats.expectancy)} per closed trade.`;
+
   return (
     <div className="page">
-      <div className="page-head">
-        <h2>Dashboard</h2>
-        <p className="page-note">Closed trades only, except open trades and exposure.</p>
+      <div className="dashboard-heading">
+        <div>
+          <p className="eyebrow">YOUR TRADING OVERVIEW</p>
+          <h2>Performance</h2>
+          <p className="page-note">A clear view of your results, trade by trade.</p>
+        </div>
+        <div className="dashboard-actions">
+          <CapitalControl startingCapital={startingCapital} onSave={onSaveStartingCapital} />
+          <a className="btn primary" href="#journal">Review trades <span aria-hidden="true">→</span></a>
+        </div>
       </div>
 
+      <section className="review-prompt" aria-label="Performance snapshot">
+        <div className="review-mark" aria-hidden="true">✳</div>
+        <div className="review-copy">
+          <p className="eyebrow">PERFORMANCE SNAPSHOT</p>
+          <p>{performanceMessage}</p>
+        </div>
+        <span className="snapshot-count">{stats.totalTrades} closed {stats.totalTrades === 1 ? 'trade' : 'trades'}</span>
+      </section>
+
       <dl className="stats">
+        <StatCard label="Account capital" value={fmtMoney(stats.latestCapital ?? startingCapital)} />
+        <StatCard label="Unrealised P/L" value={fmtSignedMoney(stats.unrealizedPL)} tone={plClass(stats.unrealizedPL)} detail="open positions" />
         <StatCard label="Total trades" value={stats.totalTrades} />
         <StatCard label="Win rate" value={fmtPct(stats.winRate, 1)} />
         <StatCard label="Total net P/L" value={fmtSignedMoney(stats.totalNetPL)} tone={plClass(stats.totalNetPL)} />
@@ -52,7 +80,12 @@ export default function Dashboard({ startingCapital }) {
       </dl>
 
       <section className="panel">
-        <h3>Month by month</h3>
+        <div className="section-heading">
+          <div>
+            <h3>Performance over time</h3>
+            <p className="page-note">Monthly realised P/L</p>
+          </div>
+        </div>
         {chartData.length ? (
           <div className="chart">
             <ResponsiveContainer width="100%" height={260}>
@@ -82,6 +115,40 @@ export default function Dashboard({ startingCapital }) {
         ) : null}
         <MonthlyTable months={months} />
       </section>
+    </div>
+  );
+}
+
+function CapitalControl({ startingCapital, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(String(startingCapital));
+  const [error, setError] = useState('');
+
+  async function save(event) {
+    event.preventDefault();
+    setError('');
+    try {
+      await onSave(value);
+      setEditing(false);
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="capital-control">
+      <button type="button" className="btn ghost" onClick={() => { setValue(String(startingCapital)); setEditing(!editing); }}>
+        Edit capital
+      </button>
+      {editing && (
+        <form className="capital-editor" onSubmit={save}>
+          <label className="visually-hidden" htmlFor="starting-capital">Starting capital</label>
+          <input id="starting-capital" type="number" step="any" required value={value} onChange={(e) => setValue(e.target.value)} />
+          <button type="submit" className="btn primary">Save</button>
+          <button type="button" className="btn ghost" onClick={() => setEditing(false)}>Cancel</button>
+          {error && <span role="alert">{error}</span>}
+        </form>
+      )}
     </div>
   );
 }

@@ -3,10 +3,8 @@ import Journal from './pages/Journal.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Login from './pages/Login.jsx';
 import { isSupabaseConfigured, supabase } from './lib/supabaseClient.js';
-import { useTradeStore, useDerivedTrades } from './store/useTradeStore.js';
+import { useTradeStore } from './store/useTradeStore.js';
 import { useAccountSettings } from './store/useAccountSettings.js';
-import { computeDashboardStats } from './lib/calculations.js';
-import { fmtMoney, fmtSignedMoney, plClass } from './lib/format.js';
 
 const PAGES = { journal: 'Journal', dashboard: 'Dashboard' };
 
@@ -22,8 +20,6 @@ export default function App() {
   const fetchTrades = useTradeStore((s) => s.fetchTrades);
   const clearTrades = useTradeStore((s) => s.clearTrades);
   const { startingCapital, loading: settingsLoading, error: settingsError, saveStartingCapital } = useAccountSettings(user?.id);
-  const rows = useDerivedTrades(startingCapital);
-  const stats = computeDashboardStats(rows);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -54,7 +50,10 @@ export default function App() {
       <header className="masthead">
         <div className="masthead-inner">
           <div className="brand">
-            <h1>Trading journal</h1>
+            <a href="#journal" className="brand-link" aria-label="Trading journal home">
+              <span className="brand-mark" aria-hidden="true">T</span>
+              <h1>Trading journal</h1>
+            </a>
             <nav className="tabs" aria-label="Views">
               {Object.entries(PAGES).map(([key, label]) => (
                 <a key={key} href={`#${key}`} className="tab" aria-current={page === key ? 'page' : undefined}>
@@ -64,22 +63,9 @@ export default function App() {
             </nav>
           </div>
 
-          <dl className="ledger-strip">
-            <div>
-              <CapitalControl startingCapital={startingCapital} onSave={saveStartingCapital} />
-              <dd>{fmtMoney(stats.latestCapital ?? startingCapital)}</dd>
-            </div>
-            <div>
-              <dt>Realised P/L</dt>
-              <dd className={plClass(stats.totalNetPL)}>{fmtSignedMoney(stats.totalNetPL)}</dd>
-            </div>
-            <div>
-              <dt>Unrealised P/L</dt>
-              <dd className={plClass(stats.unrealizedPL)}>{fmtSignedMoney(stats.unrealizedPL)}</dd>
-            </div>
-          </dl>
           <div className="account-menu">
-            <span>{user.email}</span>
+            <span className="account-email">{user.email}</span>
+            <span className="account-avatar" aria-hidden="true">{(user.email || 'T').slice(0, 1).toUpperCase()}</span>
             <button type="button" className="btn ghost sign-out" onClick={() => supabase.auth.signOut()}>
               Sign out
             </button>
@@ -93,40 +79,9 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {settingsLoading ? <p className="empty">Loading accountâ€¦</p> : page === 'journal' ? <Journal startingCapital={startingCapital} /> : <Dashboard startingCapital={startingCapital} />}
+        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal startingCapital={startingCapital} /> : <Dashboard startingCapital={startingCapital} onSaveStartingCapital={saveStartingCapital} />}
       </main>
     </div>
-  );
-}
-
-function CapitalControl({ startingCapital, onSave }) {
-  const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(String(startingCapital));
-  const [error, setError] = useState('');
-
-  async function save(event) {
-    event.preventDefault();
-    setError('');
-    try {
-      await onSave(value);
-      setEditing(false);
-    } catch (err) {
-      setError(err.message);
-    }
-  }
-
-  return (
-    <>
-      <dt>Capital <button type="button" className="capital-edit" onClick={() => { setValue(String(startingCapital)); setEditing(!editing); }}>Edit base</button></dt>
-      {editing && (
-        <form className="capital-editor" onSubmit={save}>
-          <input aria-label="Starting capital" type="number" step="any" required value={value} onChange={(e) => setValue(e.target.value)} />
-          <button type="submit" className="btn primary">Save</button>
-          <button type="button" className="btn ghost" onClick={() => setEditing(false)}>Cancel</button>
-          {error && <span role="alert">{error}</span>}
-        </form>
-      )}
-    </>
   );
 }
 

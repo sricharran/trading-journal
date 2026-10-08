@@ -49,7 +49,11 @@ export default function Journal({ startingCapital = 0 }) {
   return (
     <div className="page">
       <div className="page-head">
-        <h2>Journal</h2>
+        <div>
+          <p className="eyebrow">YOUR TRADING HISTORY</p>
+          <h2>Trade journal</h2>
+          <p className="page-note">Capture the details. Learn from every trade.</p>
+        </div>
         <div className="page-tools">
           <div className="filter" role="group" aria-label="Show trades">
             {FILTERS.map((f) => (
