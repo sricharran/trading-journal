@@ -71,6 +71,28 @@ export default function TradeTable({ rows, onEdit, onDelete }) {
           </tbody>
         </table>
       </div>
+      <div className="trade-mobile-list">
+        {rows.map((r) => {
+          const open = isOpenPosition(r);
+          const qty = (r.lots ?? 0) * (r.lotSize ?? 0);
+          return (
+            <article key={r.id} className={`mobile-trade${open ? ' is-open' : ''}`}>
+              <header className="mobile-trade-head">
+                <div>
+                  <button type="button" className="trade-link mobile-trade-symbol" onClick={() => setSelected(r)}>{r.symbol}</button>
+                  <p>{r.type === 'L' ? 'Long' : 'Short'} · {fmtDate(r.type === 'L' ? r.buyDate : r.sellDate)} · {fmtWhole(qty)} qty</p>
+                </div>
+                <Status open={open} />
+              </header>
+              <div className="mobile-trade-metrics">
+                <div><span>Buy</span><strong>{fmtPrice(r.buyPrice)}</strong></div>
+                <div><span>{open ? 'LTP' : 'Sell'}</span><strong>{open ? fmtPrice(r.ltp) : fmtPrice(r.sellPrice)}</strong></div>
+                <div><span>Net P/L</span><strong className={plClass(r.netPL)}>{fmtSignedMoney(r.netPL)}</strong></div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
       {selected && (
         <TradeDetails
           row={selected}

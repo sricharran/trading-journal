@@ -1059,3 +1059,48 @@ body {
   .account-email { margin-right: auto; }
   .dashboard-actions { flex-wrap: wrap; justify-content: flex-end; }
 }
+
+.trade-mobile-list { display: none; }
+.mobile-trade {
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 2px 8px rgb(23 38 59 / 3%);
+}
+.mobile-trade.is-open { border-color: #f0dfb7; background: #fffaf0; }
+.mobile-trade-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+.mobile-trade-symbol { font-family: var(--font-figure); font-size: 1rem; }
+.mobile-trade-head p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.78rem; }
+.mobile-trade-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; margin-top: 0.9rem; padding-top: 0.75rem; border-top: 1px solid var(--rule); }
+.mobile-trade-metrics div { display: flex; min-width: 0; flex-direction: column; gap: 0.12rem; }
+.mobile-trade-metrics span { color: var(--muted); font-size: 0.72rem; }
+.mobile-trade-metrics strong { overflow: hidden; font-size: 0.86rem; font-variant-numeric: tabular-nums; text-overflow: ellipsis; }
+
+@media (max-width: 680px) {
+  .content { padding: 1.25rem 1rem 2rem; }
+  .masthead-inner { padding-right: 1rem; padding-left: 1rem; }
+  .page-head { align-items: flex-start; flex-direction: column; }
+  .page-tools { width: 100%; justify-content: space-between; }
+  .trade-form, .panel { padding: 1rem; }
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+  .stat { min-height: 92px; padding: 0.8rem; }
+  .stat dd { font-size: 1.1rem; }
+  .table-wrap { display: none; }
+  .trade-mobile-list { display: grid; gap: 0.65rem; }
+  .dashboard-heading { align-items: flex-start; flex-direction: column; }
+  .dashboard-actions { width: 100%; justify-content: flex-start; }
+  .section-heading { align-items: flex-start; }
+  .chart { margin-right: -0.5rem; margin-left: -0.5rem; }
+  .trade-details { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 380px) {
+  .brand { align-items: flex-start; flex-direction: column; }
+  .page-tools { align-items: stretch; flex-direction: column; }
+  .page-tools .filter { align-self: flex-start; }
+  .dashboard-actions { align-items: stretch; flex-direction: column; }
+  .capital-control .btn, .dashboard-actions > .btn { width: 100%; }
+  .mobile-trade-metrics { gap: 0.25rem; }
+  .mobile-trade-metrics strong { font-size: 0.76rem; }
+}
