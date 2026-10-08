@@ -1,10 +1,9 @@
 import { useMemo, useState } from 'react';
 import {
   ResponsiveContainer,
-  ComposedChart,
+  BarChart,
   Bar,
   Cell,
-  Line,
   XAxis,
   YAxis,
   Tooltip,
@@ -25,7 +24,6 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
   const chartData = months.map((m) => ({
     label: fmtMonth(m.year, m.month),
     gross: Number(m.grossPL.toFixed(2)),
-    cumulative: Number(m.cumulativePL.toFixed(2)),
   }));
 
   const performanceMessage = stats.totalTrades === 0 && rows.length > 0
@@ -85,14 +83,13 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
         <div className="section-heading">
           <div>
             <h3>Performance over time</h3>
-            <p className="page-note">Monthly realised P/L and cumulative results</p>
+            <p className="page-note">Monthly realised P/L</p>
           </div>
-          <span className="chart-legend"><i /> Monthly P/L <b /> Cumulative</span>
         </div>
         {chartData.length ? (
           <div className="chart">
             <ResponsiveContainer width="100%" height={260}>
-              <ComposedChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
+              <BarChart data={chartData} margin={{ top: 8, right: 8, bottom: 0, left: 8 }}>
                 <CartesianGrid stroke="var(--rule)" vertical={false} />
                 <XAxis dataKey="label" tick={{ fill: 'var(--muted)', fontSize: 12 }} axisLine={false} tickLine={false} />
                 <YAxis
@@ -112,8 +109,7 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
                     <Cell key={d.label} fill={d.gross >= 0 ? 'var(--gain)' : 'var(--loss)'} fillOpacity={0.75} />
                   ))}
                 </Bar>
-                <Line type="monotone" dataKey="cumulative" stroke="var(--accent)" strokeWidth={2} dot={{ r: 3 }} />
-              </ComposedChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         ) : null}

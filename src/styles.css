@@ -952,9 +952,6 @@ body {
 .section-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin-bottom: 0.6rem; }
 .panel .section-heading h3 { margin: 0; font-size: 1.05rem; letter-spacing: -0.02em; }
 .section-heading .page-note { font-size: 0.82rem; }
-.chart-legend { display: flex; align-items: center; gap: 0.35rem; color: var(--muted); font-size: 0.75rem; }
-.chart-legend i, .chart-legend b { display: inline-block; width: 9px; height: 9px; margin-left: 0.45rem; border-radius: 3px; background: #8da0ff; }
-.chart-legend b { width: 14px; height: 2px; border-radius: 0; background: var(--accent); }
 .chart { margin-top: 0.75rem; }
 
 .table-wrap { border-color: var(--rule); border-radius: 10px; }
@@ -977,7 +974,6 @@ body {
   .review-prompt { align-items: flex-start; padding: 0.9rem; }
   .snapshot-count { display: none; }
   .section-heading { align-items: flex-start; flex-direction: column; }
-  .chart-legend { margin-top: -0.3rem; }
 }
 
 /* Compact app bar: brand and navigation stay together; account actions sit opposite. */
