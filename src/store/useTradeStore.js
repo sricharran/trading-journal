@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { create } from 'zustand';
 import { supabase, isSupabaseConfigured } from '../lib/supabaseClient.js';
 import { mapTradeFromDb, mapFormToDb } from '../lib/tradeMapper.js';
-import { deriveAllTrades } from '../lib/calculations.js';
+import { deriveTradesWithCapitalAdjustments } from '../lib/calculations.js';
 
 /**
  * Raw trades live here, exactly as stored in Supabase.
@@ -10,22 +10,49 @@ import { deriveAllTrades } from '../lib/calculations.js';
  */
 export const useTradeStore = create((set, get) => ({
   trades: [],
+  capitalAdjustments: [],
+  capitalAdjustmentError: null,
   loading: false,
   error: null,
 
   clearTrades() {
-    set({ trades: [], loading: false, error: null });
+    set({ trades: [], capitalAdjustments: [], capitalAdjustmentError: null, loading: false, error: null });
   },
 
   async fetchTrades() {
     if (!isSupabaseConfigured) return;
-    set({ loading: true, error: null });
+    set({ loading: true, error: null, capitalAdjustments: [], capitalAdjustmentError: null });
+    const [tradesResult, adjustmentsResult] = await Promise.all([
+      supabase.from('trades').select('*').order('created_at', { ascending: true }),
+      supabase.from('capital_adjustments').select('*').order('created_at', { ascending: true }),
+    ]);
+    if (tradesResult.error) {
+      set({ loading: false, error: tradesResult.error.message });
+      return;
+    }
+    set({
+      loading: false,
+      trades: tradesResult.data.map(mapTradeFromDb),
+      capitalAdjustments: adjustmentsResult.error ? [] : adjustmentsResult.data.map((row) => ({
+        id: row.id,
+        direction: row.direction,
+        amount: Number(row.amount),
+        createdAt: row.created_at,
+      })),
+      capitalAdjustmentError: adjustmentsResult.error?.message ?? null,
+    });
+  },
+
+  async addCapitalAdjustment(direction, amount) {
     const { data, error } = await supabase
-      .from('trades')
-      .select('*')
-      .order('created_at', { ascending: true });
-    if (error) set({ loading: false, error: error.message });
-    else set({ loading: false, trades: data.map(mapTradeFromDb) });
+      .from('capital_adjustments')
+      .insert({ direction, amount: Number(amount) })
+      .select()
+      .single();
+    if (error) throw new Error(error.message);
+    const adjustment = { id: data.id, direction: data.direction, amount: Number(data.amount), createdAt: data.created_at };
+    set({ capitalAdjustments: [...get().capitalAdjustments, adjustment], capitalAdjustmentError: null });
+    return adjustment;
   },
 
   async addTrade(form) {
@@ -56,5 +83,9 @@ export const useTradeStore = create((set, get) => ({
 /** All trades with derived fields, in entry order (oldest first). */
 export function useDerivedTrades(startingCapital = 0) {
   const trades = useTradeStore((s) => s.trades);
-  return useMemo(() => deriveAllTrades(trades, { startingCapital }), [trades, startingCapital]);
+  const capitalAdjustments = useTradeStore((s) => s.capitalAdjustments);
+  return useMemo(
+    () => deriveTradesWithCapitalAdjustments(trades, capitalAdjustments, { startingCapital }),
+    [trades, capitalAdjustments, startingCapital]
+  );
 }

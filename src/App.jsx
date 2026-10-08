@@ -19,7 +19,7 @@ export default function App() {
   const [authReady, setAuthReady] = useState(false);
   const fetchTrades = useTradeStore((s) => s.fetchTrades);
   const clearTrades = useTradeStore((s) => s.clearTrades);
-  const { startingCapital, loading: settingsLoading, error: settingsError, saveStartingCapital } = useAccountSettings(user?.id);
+  const { startingCapital, loading: settingsLoading, error: settingsError } = useAccountSettings(user?.id);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return undefined;
@@ -79,7 +79,7 @@ export default function App() {
             Could not load account settings. Apply <code>supabase/schema.sql</code> or the auth migration, then reload. ({settingsError})
           </div>
         )}
-        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal startingCapital={startingCapital} /> : <Dashboard startingCapital={startingCapital} onSaveStartingCapital={saveStartingCapital} />}
+        {settingsLoading ? <p className="empty">Loading account…</p> : page === 'journal' ? <Journal startingCapital={startingCapital} /> : <Dashboard startingCapital={startingCapital} />}
       </main>
     </div>
   );

@@ -22,10 +22,13 @@ You need Node 18+ and a Supabase project.
    preserve trades in the existing database, replace the email placeholder in
    `supabase/migrate-to-auth.sql` with the account email you just created, then run that migration.
    It assigns existing trades to that account and removes the old anonymous access policy.
-4. **Configure** — copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
+4. **Enable capital adjustments** — run `docs/capital-adjustments.sql` in the Supabase SQL editor.
+   This creates a private, per-user ledger for dashboard deposits and withdrawals.
+5. **Configure** — copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` and
    `VITE_SUPABASE_ANON_KEY` from Supabase → Project Settings → API. Set the same two variables in
-   the hosting provider's build environment. Set starting capital after signing in using **Edit base**.
-5. **Run**
+   the hosting provider's build environment. Record deposits and withdrawals from the Dashboard's
+   **Add / withdraw** control; the first deposit can be used to enter an initial account balance.
+6. **Run**
    ```bash
    npm run dev
    ```

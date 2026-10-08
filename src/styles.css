@@ -1042,6 +1042,14 @@ body {
 }
 .capital-editor input { width: 100%; min-width: 0; border: 1px solid var(--rule); border-radius: 8px; padding: 0.55rem; font: inherit; }
 .capital-editor [role='alert'] { flex-basis: 100%; color: var(--loss); font-size: 0.78rem; }
+.capital-editor { display: grid; gap: 0.65rem; }
+.capital-current { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0; color: var(--muted); font-size: 0.82rem; }
+.capital-current strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.capital-options { display: grid; grid-template-columns: 1fr 1fr; padding: 3px; border-radius: 9px; background: #f1f3f7; }
+.capital-options button { border: 0; border-radius: 7px; padding: 0.45rem; color: var(--muted); background: transparent; font: inherit; font-size: 0.86rem; cursor: pointer; }
+.capital-options button.selected { color: var(--ink); background: #fff; box-shadow: 0 1px 4px rgb(23 38 59 / 10%); }
+.capital-editor-actions { display: flex; gap: 0.5rem; }
+.capital-editor-actions .btn { flex: 1; }
 
 @media (max-width: 760px) {
   .masthead-inner { align-items: center; }

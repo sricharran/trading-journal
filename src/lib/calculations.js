@@ -235,14 +235,46 @@ function byEntryOrder(a, b) {
  * for subsequent rows. Open P/L stays unrealized. Returns entry order.
  */
 export function deriveAllTrades(trades, { startingCapital = DEFAULT_STARTING_CAPITAL, today = todayDayNumber() } = {}) {
+  return deriveTradesWithCapitalAdjustments(trades, [], { startingCapital, today });
+}
+
+function adjustmentDelta(adjustment) {
+  const amount = n(adjustment.amount);
+  return adjustment.direction === 'withdraw' ? -amount : amount;
+}
+
+/** Derive trades while applying dated account deposits and withdrawals before later entries. */
+export function deriveTradesWithCapitalAdjustments(
+  trades,
+  capitalAdjustments = [],
+  { startingCapital = DEFAULT_STARTING_CAPITAL, today = todayDayNumber() } = {}
+) {
   const ordered = [...trades].sort(byEntryOrder);
+  const adjustments = [...capitalAdjustments].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
   let capital = n(startingCapital);
+  let adjustmentIndex = 0;
   return ordered.map((trade) => {
+    const tradeTime = trade.createdAt ? Date.parse(trade.createdAt) : 0;
+    while (adjustmentIndex < adjustments.length && Date.parse(adjustments[adjustmentIndex].createdAt) <= tradeTime) {
+      capital += adjustmentDelta(adjustments[adjustmentIndex]);
+      adjustmentIndex += 1;
+    }
     capital += n(trade.capAdjustment);
     const derived = deriveTrade(trade, capital, { today });
     if (!isOpenPosition(trade) && isNum(derived.netPL)) capital += derived.netPL;
     return { ...trade, ...derived, closingCapital: capital };
   });
+}
+
+/** Current account capital includes realized results and all account cash flows. */
+export function computeCurrentCapital(derivedRows, startingCapital = DEFAULT_STARTING_CAPITAL, capitalAdjustments = []) {
+  let capital = n(startingCapital);
+  for (const row of derivedRows) {
+    capital += n(row.capAdjustment);
+    if (!isOpenPosition(row) && isNum(row.netPL)) capital += row.netPL;
+  }
+  for (const adjustment of capitalAdjustments) capital += adjustmentDelta(adjustment);
+  return capital;
 }
 
 // ---------------------------------------------------------------------------
@@ -265,7 +297,7 @@ export function closedTrades(derivedRows) {
 /**
  * @param {Array} derivedRows output of deriveAllTrades (entry order)
  */
-export function computeDashboardStats(derivedRows) {
+export function computeDashboardStats(derivedRows, { latestCapital: capitalOverride } = {}) {
   const closed = closedTrades(derivedRows);
   const pls = closed.map((r) => r.netPL).filter(isNum);
   const winners = pls.filter((v) => v > 0);
@@ -307,7 +339,7 @@ export function computeDashboardStats(derivedRows) {
       })
       .filter(isNum)
   );
-  const latestCapital = derivedRows.length ? derivedRows[derivedRows.length - 1].closingCapital : null;
+  const latestCapital = capitalOverride ?? (derivedRows.length ? derivedRows[derivedRows.length - 1].closingCapital : null);
   const openExposurePct = div(openValue, latestCapital); // fraction
 
   return {

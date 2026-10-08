@@ -12,13 +12,23 @@ import {
 } from 'recharts';
 import StatCard from '../components/StatCard.jsx';
 import MonthlyTable from '../components/MonthlyTable.jsx';
-import { useDerivedTrades } from '../store/useTradeStore.js';
-import { computeDashboardStats, computeMonthlyPerformance } from '../lib/calculations.js';
+import { useDerivedTrades, useTradeStore } from '../store/useTradeStore.js';
+import { computeCurrentCapital, computeDashboardStats, computeMonthlyPerformance } from '../lib/calculations.js';
 import { fmtMonth, fmtPct, fmtRatio, fmtSignedMoney, fmtDays, fmtMoney, plClass } from '../lib/format.js';
 
-export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
+export default function Dashboard({ startingCapital }) {
   const rows = useDerivedTrades(startingCapital);
-  const stats = useMemo(() => computeDashboardStats(rows), [rows]);
+  const capitalAdjustments = useTradeStore((s) => s.capitalAdjustments);
+  const capitalAdjustmentError = useTradeStore((s) => s.capitalAdjustmentError);
+  const addCapitalAdjustment = useTradeStore((s) => s.addCapitalAdjustment);
+  const currentCapital = useMemo(
+    () => computeCurrentCapital(rows, startingCapital, capitalAdjustments),
+    [rows, startingCapital, capitalAdjustments]
+  );
+  const stats = useMemo(
+    () => computeDashboardStats(rows, { latestCapital: currentCapital }),
+    [rows, currentCapital]
+  );
   const months = useMemo(() => computeMonthlyPerformance(rows), [rows]);
 
   const chartData = months.map((m) => ({
@@ -45,7 +55,11 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
           <p className="page-note">A clear view of your results, trade by trade.</p>
         </div>
         <div className="dashboard-actions">
-          <CapitalControl startingCapital={startingCapital} onSave={onSaveStartingCapital} />
+          <CapitalControl
+            currentCapital={currentCapital}
+            onAdjust={addCapitalAdjustment}
+            setupError={capitalAdjustmentError}
+          />
           <a className="btn primary" href="#journal">Review trades <span aria-hidden="true">→</span></a>
         </div>
       </div>
@@ -101,7 +115,7 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
                 />
                 <ReferenceLine y={0} stroke="var(--ink)" strokeOpacity={0.4} />
                 <Tooltip
-                  formatter={(v, name) => [fmtSignedMoney(v), name === 'gross' ? 'Month P/L' : 'Cumulative']}
+                  formatter={(v) => [fmtSignedMoney(v), 'Month P/L']}
                   contentStyle={{ borderRadius: 4, border: '1px solid var(--rule)', fontSize: 13 }}
                 />
                 <Bar dataKey="gross" maxBarSize={36}>
@@ -119,16 +133,27 @@ export default function Dashboard({ startingCapital, onSaveStartingCapital }) {
   );
 }
 
-function CapitalControl({ startingCapital, onSave }) {
+function CapitalControl({ currentCapital, onAdjust, setupError }) {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState(String(startingCapital));
+  const [direction, setDirection] = useState('add');
+  const [amount, setAmount] = useState('');
   const [error, setError] = useState('');
 
   async function save(event) {
     event.preventDefault();
     setError('');
+    const value = Number(amount);
+    if (!Number.isFinite(value) || value <= 0) {
+      setError('Enter an amount greater than zero.');
+      return;
+    }
+    if (direction === 'withdraw' && value > currentCapital) {
+      setError('Withdrawal can’t exceed the current account capital.');
+      return;
+    }
     try {
-      await onSave(value);
+      await onAdjust(direction, value);
+      setAmount('');
       setEditing(false);
     } catch (err) {
       setError(err.message);
@@ -137,16 +162,23 @@ function CapitalControl({ startingCapital, onSave }) {
 
   return (
     <div className="capital-control">
-      <button type="button" className="btn ghost" onClick={() => { setValue(String(startingCapital)); setEditing(!editing); }}>
+      <button type="button" className="btn ghost" onClick={() => { setError(''); setEditing(!editing); }}>
         Edit capital
       </button>
       {editing && (
         <form className="capital-editor" onSubmit={save}>
-          <label className="visually-hidden" htmlFor="starting-capital">Starting capital</label>
-          <input id="starting-capital" type="number" step="any" required value={value} onChange={(e) => setValue(e.target.value)} />
-          <button type="submit" className="btn primary">Save</button>
-          <button type="button" className="btn ghost" onClick={() => setEditing(false)}>Cancel</button>
-          {error && <span role="alert">{error}</span>}
+          <p className="capital-current">Current capital <strong>{fmtMoney(currentCapital)}</strong></p>
+          <div className="capital-options" role="group" aria-label="Capital action">
+            <button type="button" className={direction === 'add' ? 'selected' : ''} aria-pressed={direction === 'add'} onClick={() => setDirection('add')}>Add</button>
+            <button type="button" className={direction === 'withdraw' ? 'selected' : ''} aria-pressed={direction === 'withdraw'} onClick={() => setDirection('withdraw')}>Withdraw</button>
+          </div>
+          <label className="visually-hidden" htmlFor="capital-adjustment-amount">Amount</label>
+          <input id="capital-adjustment-amount" type="number" min="0.01" step="any" required placeholder="Amount" value={amount} onChange={(e) => setAmount(e.target.value)} />
+          {(error || setupError) && <span role="alert">{error || `Apply the capital adjustments SQL migration first. ${setupError}`}</span>}
+          <div className="capital-editor-actions">
+            <button type="submit" className="btn primary">{direction === 'add' ? 'Add funds' : 'Withdraw funds'}</button>
+            <button type="button" className="btn ghost" onClick={() => setEditing(false)}>Cancel</button>
+          </div>
         </form>
       )}
     </div>
