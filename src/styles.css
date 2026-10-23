@@ -1108,3 +1108,87 @@ body {
   .mobile-trade-metrics { gap: 0.25rem; }
   .mobile-trade-metrics strong { font-size: 0.76rem; }
 }
+
+/* High-contrast dark theme inspired by the trade review reference. */
+:root {
+  color-scheme: dark;
+  --paper: #080809;
+  --surface: #101012;
+  --ink: #f4f4f5;
+  --muted: #a1a1aa;
+  --rule: #29292e;
+  --gain: #12d66b;
+  --loss: #ff3b4f;
+  --open: #ffb547;
+  --open-tint: #19130b;
+  --accent: #f4f4f5;
+}
+
+body { background: var(--paper); color: var(--ink); }
+.masthead { background: #050506; color: var(--ink); border-bottom: 1px solid var(--rule); }
+.brand-link, .brand-link h1 { color: var(--ink); }
+.brand-mark { background: var(--ink); color: #080809; }
+.tab { color: var(--muted); }
+.tab:hover { color: var(--ink); background: #1a1a1e; }
+.tab[aria-current='page'] { color: #fff; background: #222226; }
+.ledger-strip dt, .account-menu { color: var(--muted); }
+.ledger-strip dd { color: var(--ink); }
+.ledger-strip .gain, .gain { color: var(--gain); }
+.ledger-strip .loss, .loss { color: var(--loss); }
+.account-avatar { background: #202024; color: var(--ink); }
+.sign-out { color: var(--ink) !important; border-color: var(--rule) !important; }
+.capital-edit, .trade-link { color: var(--ink); }
+.content { color: var(--ink); }
+.eyebrow, .page-note, .muted { color: var(--muted); }
+.notice, .panel, .trade-form, .login-card, .stat, .mobile-trade {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--rule);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 24%);
+}
+.login-card { border-top-color: var(--ink); }
+code { color: var(--ink); background: #202024; }
+.btn.primary { background: #f4f4f5; color: #09090b; box-shadow: none; }
+.btn.primary:hover:not(:disabled) { background: #d4d4d8; }
+.btn.ghost, .filter { color: var(--ink); background: #141416; border-color: var(--rule); }
+.btn.ghost:hover:not(:disabled) { background: #202024; border-color: #52525b; }
+.btn.link { color: var(--ink); }
+.filter button { color: var(--muted); }
+.filter button + button { border-color: var(--rule); }
+.filter button.on { color: #09090b; background: var(--ink); }
+.table-wrap { background: var(--surface); border-color: var(--rule); }
+.ledger thead th { color: var(--muted); background: #151517; border-color: var(--rule); }
+.ledger th, .ledger td { border-color: var(--rule); }
+.ledger tbody tr:hover > *, .ledger tbody tr:hover > .sticky { background: #1a1a1e; }
+.ledger .sticky { background: var(--surface); }
+.ledger tr.is-open > *, .ledger tr.is-open:hover > * { background: var(--open-tint); }
+.ledger tr.is-open > .sticky { box-shadow: inset 4px 0 0 var(--open); }
+.status.closed, .ledger .sub { color: var(--muted); }
+.mobile-trade.is-open { background: var(--open-tint); border-color: #58401b; }
+.mobile-trade-metrics { border-color: var(--rule); }
+.target.hit { color: var(--gain); background: #0d2a19; }
+.target.miss { color: var(--loss); background: #351116; }
+.review-prompt { border-color: #35353b; background: linear-gradient(110deg, #161619, #101012 76%); }
+.review-mark { color: var(--ink); background: #242428; }
+.review-copy .eyebrow { color: var(--ink); }
+.snapshot-count { color: var(--muted); }
+.stat dt, .stat .stat-detail { color: var(--muted); }
+.capital-editor { color: var(--ink); background: #151517; border-color: var(--rule); box-shadow: 0 12px 32px rgb(0 0 0 / 55%); }
+.capital-editor input, .field input, .field textarea { color: var(--ink); background: #0b0b0d; border-color: var(--rule); }
+.field input:disabled { color: var(--muted); background: #19191c; }
+.capital-current strong { color: var(--ink); }
+.capital-options { background: #09090b; }
+.capital-options button { color: var(--muted); }
+.capital-options button.selected { color: #09090b; background: var(--ink); }
+.group legend { border-color: var(--rule); }
+.segmented { border-color: var(--rule); }
+.segmented label { color: var(--muted); }
+.segmented label + label { border-color: var(--rule); }
+.segmented label.on { color: #09090b; background: var(--ink); }
+.form-error { color: var(--loss); background: #2a1115; }
+.field-error, .capital-editor [role='alert'] { color: var(--loss); }
+.chart .recharts-cartesian-grid-horizontal line { stroke: var(--rule); }
+
+@media (max-width: 640px) {
+  .capital-editor { background: #151517; }
+}
